@@ -184,30 +184,28 @@ static void calc_throttle()
 
 			
 			//throttle from distance
-			if (wp_distance < 0.0025*(*target_distance)) {
-				// within 25% of desired separation -- cut throttle to avoid collision!
-				throttle_target = 0;
-			} else {
-				// add delta based on PID control (percent distance)
-				throttle_nudge = pidDistThrottle->get_pid(100*(*distance_error)/(*target_distance));
-			}
+			throttle_nudge = pidDistThrottle->get_pid(100*(*distance_error)/(*target_distance));
+
 
 			g.channel_throttle.servo_out = throttle_target + throttle_nudge;
 
+
 			// DEBUG INFO
-			if (medium_loopCounter == 3) {
-				/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
-				/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
-				/*DBG->print("DistErr: ");*/DBG->print((*distance_error));DBG->print("    ");
-				/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
-				/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
-				/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
-			}
+			//if (medium_loopCounter == 3) {
+			//	/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
+			//	/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
+			//	/*DBG->print("DistErr: ");*/DBG->print((*distance_error));DBG->print("    ");
+			//	/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
+			//	/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
+			//	/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
+			//}
+			
 
 			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
-			if (medium_loopCounter == 3) {
-				/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
-			}
+
+			//if (medium_loopCounter == 3) {
+			//	/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
+			//}
 
 			break;
 	default:
