@@ -86,12 +86,8 @@
 FastSerialPort0(Serial);        // FTDI/console
 FastSerialPort1(Serial1);       // GPS port
 FastSerialPort2(Serial2);		// Relative NAV solution over UART2			#MD
-/*
-static FastSerial *rNAVSerial = &Serial2;								 // #MD
-#if (HIL_MODE == HIL_MODE_ATTITUDE) || (HIL_MODE == HIL_MODE_ATTITUDE)   // #MD
-	static FastSerial *debugSerial = &Serial1;							 // #MD
-#endif																     // #MD
-*/
+
+
 #if TELEMETRY_UART2 == ENABLED
 // solder bridge set to enable UART2 instead of USB MUX
 FastSerialPort2(Serial3);
@@ -101,6 +97,13 @@ FastSerialPort3(Serial3);        // Telemetry port for APM1
 
 // port to use for command line interface
 static FastSerial *cliSerial = &Serial;
+
+// port to use for debugging  #MD
+#if MY_DEBUG
+	FastSerial* DBG = &Serial1;
+#else
+	FastSerial* DBG = NULL;
+#endif
 
 // this sets up the parameter table, and sets the default values. This
 // must be the first AP_Param variable declared to ensure its
@@ -178,7 +181,6 @@ static GPS         *g_gps;
 // Relative navigation should be accessed through this pointer		//#MD
 static RelNAV	   rNav_obj;
 static RelNAV     *rNav = &rNav_obj;
-float  relState[6] = {0, 0, 0, 0, 0, 0};
 
 
 
@@ -846,15 +848,10 @@ static void medium_loop()
 
 
 		// Get the Rel. NAV solution over serial		//begin #MD
-		rNav->update(relState);
-		/*for (int i=0;i<6;i++){
-			Serial1.print(relState[i]);
-			Serial1.print(", ");
-		}
-		*/
+		//if (control_mode == REL_NAV)
+			if (!rNav->update()) //Screw it... try every time
+				DBG->println("NO SERIAL DATA");
 		//end #MD
-
-
 
         break;
 
@@ -1245,9 +1242,7 @@ static void update_navigation()
         break;
 
 	case REL_NAV:  //begin #MD
-		// need to compute a bearing error
-		//bearing_error_cd = ; //TODO:  Need to compute this
-		//bearing_error_cd = wrap_180_cd(bearing_error_cd);
+		calc_bearing_error();
 		break;     // end #MD
 
     case MANUAL:

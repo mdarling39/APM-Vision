@@ -5,43 +5,68 @@
 //****************************************************************
 static void navigate()
 {
-    // do not navigate with corrupt data
-    // ---------------------------------
-    if (!have_position) {
-        return;
-    }
 
-    if(next_WP.lat == 0) {
-        return;
-    }
+	// do not navigate with corrupt data
+	// ---------------------------------
+	if (!have_position) {
+		return;
+	}
 
-    // waypoint distance from plane
-    // ----------------------------
-    wp_distance = get_distance(&current_loc, &next_WP);
 
-    if (wp_distance < 0) {
-        gcs_send_text_P(SEVERITY_HIGH,PSTR("WP error - distance < 0"));
-        return;
-    }
+	switch(control_mode){  // #MD  Added a switch-case block here to compute NAV updates
+	case REL_NAV:		   // #MD  differently for REL_NAV mode
 
-    // target_bearing is where we should be heading
-    // --------------------------------------------
-    target_bearing_cd       = get_bearing_cd(&current_loc, &next_WP);
+		// update relative bearing and altitude in Formation Frame
+		rNav->updateDCM(ahrs.roll_sensor,ahrs.pitch_sensor);
 
-    // nav_bearing will includes xtrac correction
-    // ------------------------------------------
-    nav_bearing_cd = target_bearing_cd;
+		// target bearing is where we should be heading (current heading + relative heading)
+		target_bearing_cd = ahrs.yaw_sensor + rNav->relative_bearing_error();
 
-    // check if we have missed the WP
-    loiter_delta = (target_bearing_cd - old_target_bearing_cd)/100;
+		// nav_bearing will include xtrac correction
+		nav_bearing_cd = target_bearing_cd;
 
-    // reset the old value
-    old_target_bearing_cd = target_bearing_cd;
+		// wrap to 360 degrees (36000 centidegrees)
+		target_bearing_cd = target_bearing_cd % 36000;
+		nav_bearing_cd = nav_bearing_cd % 36000;
 
-    // wrap values
-    if (loiter_delta > 180) loiter_delta -= 360;
-    if (loiter_delta < -180) loiter_delta += 360;
-    loiter_sum += abs(loiter_delta);
+		break;
+
+	default:
+		if(next_WP.lat == 0) {
+			return;
+		}
+
+		// waypoint distance from plane
+		// ----------------------------
+		wp_distance = get_distance(&current_loc, &next_WP);
+
+		if (wp_distance < 0) {
+			gcs_send_text_P(SEVERITY_HIGH,PSTR("WP error - distance < 0"));
+			return;
+		}
+
+		// target_bearing is where we should be heading
+		// --------------------------------------------
+		target_bearing_cd       = get_bearing_cd(&current_loc, &next_WP);
+
+		// nav_bearing will includes xtrac correction
+		// ------------------------------------------
+		nav_bearing_cd = target_bearing_cd;
+
+		// check if we have missed the WP
+		loiter_delta = (target_bearing_cd - old_target_bearing_cd)/100;
+
+		// reset the old value
+		old_target_bearing_cd = target_bearing_cd;
+
+		// wrap values
+		if (loiter_delta > 180) loiter_delta -= 360;
+		if (loiter_delta < -180) loiter_delta += 360;
+		loiter_sum += abs(loiter_delta);
+
+		break;
+	}
+
 
     // control mode specific updates to nav_bearing
     // --------------------------------------------
@@ -107,27 +132,37 @@ static void calc_gndspeed_undershoot()
 
 static void calc_bearing_error()
 {
-    bearing_error_cd = nav_bearing_cd - ahrs.yaw_sensor;
+	bearing_error_cd = nav_bearing_cd - ahrs.yaw_sensor;
     bearing_error_cd = wrap_180_cd(bearing_error_cd);
 }
 
 static void calc_altitude_error()
 {
-    if(control_mode == AUTO && offset_altitude_cm != 0) {
-        // limit climb rates
-        target_altitude_cm = next_WP.alt - ((float)((wp_distance -30) * offset_altitude_cm) / (float)(wp_totalDistance - 30));
+	if (control_mode == REL_NAV) {
 
-        // stay within a certain range
-        if(prev_WP.alt > next_WP.alt) {
-            target_altitude_cm = constrain(target_altitude_cm, next_WP.alt, prev_WP.alt);
-        }else{
-            target_altitude_cm = constrain(target_altitude_cm, prev_WP.alt, next_WP.alt);
-        }
-    } else if (non_nav_command_ID != MAV_CMD_CONDITION_CHANGE_ALT) {
-        target_altitude_cm = next_WP.alt;
-    }
+		// we already updated DCM when getting the bearing
+		altitude_error_cm		= rNav->relative_altitude_error();
 
-    altitude_error_cm       = target_altitude_cm - adjusted_altitude_cm();
+		return;
+	}
+
+
+	if(control_mode == AUTO && offset_altitude_cm != 0) {
+		// limit climb rates
+		target_altitude_cm = next_WP.alt - ((float)((wp_distance -30) * offset_altitude_cm) / (float)(wp_totalDistance - 30));
+
+		// stay within a certain range
+		if(prev_WP.alt > next_WP.alt) {
+			target_altitude_cm = constrain(target_altitude_cm, next_WP.alt, prev_WP.alt);
+		}else{
+			target_altitude_cm = constrain(target_altitude_cm, prev_WP.alt, next_WP.alt);
+		}
+	} else if (non_nav_command_ID != MAV_CMD_CONDITION_CHANGE_ALT) {
+		target_altitude_cm = next_WP.alt;
+	}
+
+	altitude_error_cm       = target_altitude_cm - adjusted_altitude_cm();
+
 }
 
 static int32_t wrap_360_cd(int32_t error)

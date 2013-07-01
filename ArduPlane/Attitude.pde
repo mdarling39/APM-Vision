@@ -156,35 +156,92 @@ static void crash_checker()
 
 static void calc_throttle()
 {
-    if (!alt_control_airspeed()) {
-        int16_t throttle_target = g.throttle_cruise + throttle_nudge;
 
-        // TODO: think up an elegant way to bump throttle when
-        // groundspeed_undershoot > 0 in the no airspeed sensor case; PID
-        // control?
+			int16_t throttle_target;
 
-        // no airspeed sensor, we use nav pitch to determine the proper throttle output
-        // AUTO, RTL, etc
-        // ---------------------------------------------------------------------------
-        if (nav_pitch_cd >= 0) {
-            g.channel_throttle.servo_out = throttle_target + (g.throttle_max - throttle_target) * nav_pitch_cd / g.pitch_limit_max_cd;
-        } else {
-            g.channel_throttle.servo_out = throttle_target - (throttle_target - g.throttle_min) * nav_pitch_cd / g.pitch_limit_min_cd;
-        }
 
-        g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
-    } else {
-        // throttle control with airspeed compensation
-        // -------------------------------------------
-        energy_error = airspeed_energy_error + altitude_error_cm * 0.098f;
+			// #MD  Added some pointers to make variables easier to deal with
+			// point to g.pidTeThrottle and use that object for relative navigation to make
+			// writing params, etc easier.
+			PID *pidDistThrottle = &g.pidTeThrottle;
 
-        // positive energy errors make the throttle go higher
-        g.channel_throttle.servo_out = g.throttle_cruise + g.pidTeThrottle.get_pid(energy_error);
-        g.channel_throttle.servo_out += (g.channel_pitch.servo_out * g.kff_pitch_to_throttle);
+			// borrow energy error variable and g.airspeed_cruise_cm variable
+			//		energy_error			= distance error  (cm)
+			//		g.airspeed_cruise_cm	= target relative (level) distance (cm)
+			int32_t* distance_error = &energy_error;
+			AP_Int32* target_distance = &g.airspeed_cruise_cm;
 
-        g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out,
-                                                 g.throttle_min.get(), g.throttle_max.get());
-    }
+
+
+	switch (control_mode){  // #MD added switch/case flow control and REL_NAV case
+	case REL_NAV:
+
+			wp_distance = rNav->get_level_dist() * 0.01; // cm to meters
+			*distance_error = (rNav->get_level_dist() - (*target_distance));
+
+
+			throttle_target = g.throttle_cruise;
+
+			
+			//throttle from distance
+			if (wp_distance < 0.0025*(*target_distance)) {
+				// within 25% of desired separation -- cut throttle to avoid collision!
+				throttle_target = 0;
+			} else {
+				// add delta based on PID control (percent distance)
+				throttle_nudge = pidDistThrottle->get_pid(100*(*distance_error)/(*target_distance));
+			}
+
+			g.channel_throttle.servo_out = throttle_target + throttle_nudge;
+
+			// DEBUG INFO
+			if (medium_loopCounter == 3) {
+				/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
+				/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
+				/*DBG->print("DistErr: ");*/DBG->print((*distance_error));DBG->print("    ");
+				/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
+				/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
+				/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
+			}
+
+			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
+			if (medium_loopCounter == 3) {
+				/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
+			}
+
+			break;
+	default:
+
+		if (!alt_control_airspeed()) {
+			throttle_target = g.throttle_cruise + throttle_nudge;
+
+			// TODO: think up an elegant way to bump throttle when
+			// groundspeed_undershoot > 0 in the no airspeed sensor case; PID
+			// control?
+
+			// no airspeed sensor, we use nav pitch to determine the proper throttle output
+			// AUTO, RTL, etc
+			// ---------------------------------------------------------------------------
+			if (nav_pitch_cd >= 0) {
+				g.channel_throttle.servo_out = throttle_target + (g.throttle_max - throttle_target) * nav_pitch_cd / g.pitch_limit_max_cd;
+			} else {
+				g.channel_throttle.servo_out = throttle_target - (throttle_target - g.throttle_min) * nav_pitch_cd / g.pitch_limit_min_cd;
+			}
+
+			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
+		} else {
+			// throttle control with airspeed compensation
+			// -------------------------------------------
+			energy_error = airspeed_energy_error + altitude_error_cm * 0.098f;
+
+			// positive energy errors make the throttle go higher
+			g.channel_throttle.servo_out = g.throttle_cruise + g.pidTeThrottle.get_pid(energy_error);
+			g.channel_throttle.servo_out += (g.channel_pitch.servo_out * g.kff_pitch_to_throttle);
+
+			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out,
+				g.throttle_min.get(), g.throttle_max.get());
+		}
+	}
 
 }
 
@@ -470,6 +527,7 @@ static void set_servos(void)
             // normal throttle calculation based on servo_out
             g.channel_throttle.calc_pwm();
         }
+		
 #endif
     }
 
