@@ -527,6 +527,14 @@ static void set_servos(void)
             // normal throttle calculation based on servo_out
             g.channel_throttle.calc_pwm();
         }
+
+#if (HIL_MODE==HIL_MODE_ATTITUDE)  // #MD
+	// compensate for need to hack the calibration in HIL mode
+	g.channel_throttle.pwm_out /= 2;
+	g.channel_throttle.radio_out = g.channel_throttle.radio_min
+		+ 0.5*(g.channel_throttle.radio_max - g.channel_throttle.radio_min)
+		+ g.channel_throttle.pwm_out;
+#endif
 		
 #endif
     }
