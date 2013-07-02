@@ -79,10 +79,10 @@ static void stabilize()
 	// Calculate dersired servo output for the roll
 	// ---------------------------------------------
 	g.channel_roll.servo_out = g.pidServoRoll.get_pid((nav_roll_cd - ahrs.roll_sensor), speed_scaler);
-	int32_t tempcalc = nav_pitch_cd +
-	        fabs(ahrs.roll_sensor * g.kff_pitch_compensation) +
-	        (g.channel_throttle.servo_out * g.kff_throttle_to_pitch) -
-	        (ahrs.pitch_sensor - g.pitch_trim_cd);
+	int32_t tempcalc = nav_pitch_cd - ahrs.pitch_sensor;// +  // #MD  modify to actually drive pitch to what is desired
+	        //fabs(ahrs.roll_sensor * g.kff_pitch_compensation) +
+	        //(g.channel_throttle.servo_out * g.kff_throttle_to_pitch) -
+	        //(ahrs.pitch_sensor - g.pitch_trim_cd);
     if (inverted_flight) {
         // when flying upside down the elevator control is inverted
         tempcalc = -tempcalc;
@@ -281,7 +281,8 @@ static void calc_nav_pitch()
     if (alt_control_airspeed()) {
         nav_pitch_cd = -g.pidNavPitchAirspeed.get_pid(airspeed_error_cm);
     } else {
-        nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
+        //nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
+		nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->pitch_cmd());    //#MD  Try to actually point at the leader and let altitude take care of itself?                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    );
     }
     nav_pitch_cd = constrain(nav_pitch_cd, g.pitch_limit_min_cd.get(), g.pitch_limit_max_cd.get());
 }
