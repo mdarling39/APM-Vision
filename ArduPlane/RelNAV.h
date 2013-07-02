@@ -78,6 +78,11 @@ public:
 		return (180/M_PI)*atan2(-dx_b.z,dx_b.x);
 	}
 
+	// get other pitch cmd
+	double bz(){
+		return -dx_b.z * (2.5400);
+	}
+
 	// update the DCM for FF frame
 	void updateDCM(int32_t roll_centi, int32_t pitch_centi) {
 		// update DCM for body to Formation Frame

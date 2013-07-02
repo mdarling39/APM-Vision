@@ -282,7 +282,8 @@ static void calc_nav_pitch()
         nav_pitch_cd = -g.pidNavPitchAirspeed.get_pid(airspeed_error_cm);
     } else {
         //nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
-		nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->pitch_cmd());    //#MD  Try to actually point at the leader and let altitude take care of itself?                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    );
+		//nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->pitch_cmd());    //#MD  Try to actually point at the leader and let altitude take care of itself?
+		nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
     }
     nav_pitch_cd = constrain(nav_pitch_cd, g.pitch_limit_min_cd.get(), g.pitch_limit_max_cd.get());
 }
