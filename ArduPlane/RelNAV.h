@@ -73,6 +73,10 @@ public:
 		return level_dist;
 	}
 
+	// get pitch_cmd
+	double pitch_cmd(){
+		return (180/M_PI)*atan2(-dx_b.z,dx_b.x);
+	}
 
 	// update the DCM for FF frame
 	void updateDCM(int32_t roll_centi, int32_t pitch_centi) {

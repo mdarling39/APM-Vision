@@ -259,7 +259,6 @@ static void test_wp_print(struct Location *cmd, byte wp_index);
 #include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\CustomIncludes.h"
 #include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\GCS.h"
 #include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\GCS_Mavlink.pde"
-#include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\HIL_Hacks.h"
 #include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\Log.pde"
 #include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\Parameters.h"
 #include "C:\Users\mdarling\Dropbox\Thesis\ArduPilot Code\Arduino_Follower\ArduPlane\Parameters.pde"
