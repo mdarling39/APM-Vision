@@ -281,9 +281,9 @@ static void calc_nav_pitch()
     if (alt_control_airspeed()) {
         nav_pitch_cd = -g.pidNavPitchAirspeed.get_pid(airspeed_error_cm);
     } else {
-        //nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
+        nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
 		//nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->pitch_cmd());    //#MD  Try to actually point at the leader and let altitude take care of itself?
-		nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
+		//nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
     }
     nav_pitch_cd = constrain(nav_pitch_cd, g.pitch_limit_min_cd.get(), g.pitch_limit_max_cd.get());
 }
@@ -317,8 +317,19 @@ static void calc_nav_roll()
     // then remove for a future release
     float nav_gain_scaler = 0.01 * g_gps->ground_speed / g.scaling_speed;
     nav_gain_scaler = constrain(nav_gain_scaler, 0.2, 1.4);
-    nav_roll_cd = g.pidNavRoll.get_pid(bearing_error_cd, nav_gain_scaler); //returns desired bank angle in degrees*100
+    nav_roll_cd = g.pidNavRoll.get_pid(bearing_error_cd + 100*0.25*rNav->get_relHdg(), nav_gain_scaler); //returns desired bank angle in degrees*100
 #endif
+
+	float nav_relBank_gain = 0.25;
+	if (control_mode == REL_NAV) {  //Use relative bank angle as pseudo-derivative information
+		if (medium_loopCounter == 3) {
+			DBG->print(bearing_error_cd);DBG->print("  ");		
+			DBG->print(100* nav_relBank_gain * rNav->get_relBank());DBG->print("  ");
+			DBG->println(100* 0.25 * rNav->get_relHdg());
+
+		}
+		nav_roll_cd = nav_roll_cd + 100 * nav_relBank_gain * rNav->get_relBank();
+	}
 
     nav_roll_cd = constrain(nav_roll_cd, -g.roll_limit_cd.get(), g.roll_limit_cd.get());
 }

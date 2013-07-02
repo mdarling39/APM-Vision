@@ -83,6 +83,12 @@ public:
 		return -dx_b.z * (2.5400);
 	}
 
+	// get relative bank
+	double get_relBank() {return dphi;};
+
+	// get relative heading
+	double get_relHdg() {return dpsi;};
+
 	// update the DCM for FF frame
 	void updateDCM(int32_t roll_centi, int32_t pitch_centi) {
 		// update DCM for body to Formation Frame
