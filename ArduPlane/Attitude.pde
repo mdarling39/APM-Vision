@@ -179,22 +179,22 @@ static void calc_throttle()
 			g.channel_throttle.servo_out = throttle_target + throttle_nudge;
 
 
-			// DEBUG INFO
-			if (medium_loopCounter == 3) {
-				/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
-				/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
-				/*DBG->print("DistErr: ");*/DBG->print(distance_error);DBG->print("    ");
-				/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
-				/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
-				/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
-			}
+			//// DEBUG INFO
+			//if (medium_loopCounter == 3) {
+			//	/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
+			//	/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
+			//	/*DBG->print("DistErr: ");*/DBG->print(distance_error);DBG->print("    ");
+			//	/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
+			//	/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
+			//	/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
+			//}
 			
 
 			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
 
-			if (medium_loopCounter == 3) {
-				/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
-			}
+			//if (medium_loopCounter == 3) {
+			//	/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
+			//}
 
 			break;
 	default:
@@ -270,9 +270,22 @@ static void calc_nav_pitch()
     if (alt_control_airspeed()) {
         nav_pitch_cd = -g.pidNavPitchAirspeed.get_pid(airspeed_error_cm);
     } else {
-        nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
-		//nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->pitch_cmd());    //#MD  Try to actually point at the leader and let altitude take care of itself?
-		//nav_pitch_cd = g.pidNavPitchAltitude.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
+		if (control_mode == REL_NAV) {
+
+			//#MD  Try to actually point at the leader and let altitude take care of itself?
+			nav_pitch_cd = g.pidRNAVPitch.get_pid(constrain(rNav->pitch_cmd(), g.pitch_RNAV_min, g.pitch_RNAV_max));
+
+			// Alternative approaches for pitch control
+			//nav_pitch_cd = g.pidRNAVPitch.get_pid(altitude_error_cm);
+			//nav_pitch_cd = g.pidRNAVPitch.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
+
+			// DEBUG INFO
+			if (medium_loopCounter == 3) {
+				DBG->print(rNav->pitch_cmd()/100.0);DBG->print("  ");DBG->println(nav_pitch_cd/100.0);;
+			}
+		} else {
+			nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
+		}
     }
     nav_pitch_cd = constrain(nav_pitch_cd, g.pitch_limit_min_cd.get(), g.pitch_limit_max_cd.get());
 }
@@ -308,6 +321,9 @@ static void calc_nav_roll()
     nav_gain_scaler = constrain(nav_gain_scaler, 0.2, 1.4);
     nav_roll_cd = g.pidNavRoll.get_pid(bearing_error_cd, nav_gain_scaler); //returns desired bank angle in degrees*100
 #endif
+
+	// DEBUG INFO
+	//DBG->print(bearing_error_cd);DBG->print("  ");DBG->println(nav_gain_scaler);
 
     nav_roll_cd = constrain(nav_roll_cd, -g.roll_limit_cd.get(), g.roll_limit_cd.get());
 }

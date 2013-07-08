@@ -641,7 +641,18 @@
  # define NAV_PITCH_ALT_INT_MAX 5
 #endif
 #define NAV_PITCH_ALT_INT_MAX_CM NAV_PITCH_ALT_INT_MAX*100
-
+#ifndef NAV_PITCH_RNAV_P										//begin #MD
+#define NAV_PITCH_RNAV_P			1.0
+#endif
+#ifndef NAV_PITCH_RNAV_I
+#define NAV_PITCH_RNAV_I			0.65
+#endif
+#ifndef NAV_PITCH_RNAV_D
+#define NAV_PITCH_RNAV_D			0.0
+#endif
+#ifndef NAV_PITCH_RNAV_INT_MAX
+#define NAV_PITCH_RNAV_INT_MAX		10.0
+#endif															//end #MD
 
 //////////////////////////////////////////////////////////////////////////////
 // Energy/Altitude control gains

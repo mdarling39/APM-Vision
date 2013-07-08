@@ -75,7 +75,7 @@ public:
 
 	// get pitch_cmd
 	double pitch_cmd(){
-		return (180/M_PI)*atan2(-dx_b.z,dx_b.x);
+		return 100*(180/M_PI)*atan2(-dx_b.z,dx_b.x);
 	}
 
 	// get other pitch cmd

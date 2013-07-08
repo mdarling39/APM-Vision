@@ -19,10 +19,27 @@ const AP_Param::Info var_info[] PROGMEM = {
     GSCALAR(sysid_this_mav,         "SYSID_THISMAV",  MAV_SYSTEM_ID),
     GSCALAR(sysid_my_gcs,           "SYSID_MYGCS",    255),
 
+///////////////////////////////////////////////////////////////////////
+// Custom scalar parameters (PID objects are located below with other PIDs)
+
+
 	// @Param: TGT_SEPTN
 	// @DisplayName: Target Separation Distance
 	// @Description:  Target separation distance (in meters) of formation
 	GSCALAR(target_separation,		"TGT_SEPTN", 65),  //#MD
+
+	// @Param: PTCH_MIN_ERR
+	// @DisplayName: Minimum pitch error value
+	// @Description: Minimum pitch error value (100*degrees)
+	GSCALAR(pitch_RNAV_min,		"PTH_MIN_ERR", -1500),  //#MD
+
+	// @Param: PTH_MAX_ERR
+	// @DisplayName: Maximum pitch error value
+	// @Description: Maximum pitch error value (100*degrees)
+	GSCALAR(pitch_RNAV_max,		"PTH_MAX_ERR", 1500),  //#MD
+
+
+///////////////////////////////////////////////////////////////////////
 
     // @Param: SERIAL3_BAUD
     // @DisplayName: Telemetry Baud Rate
@@ -643,8 +660,9 @@ const AP_Param::Info var_info[] PROGMEM = {
 
 	GGROUP(pidNavRoll,              "HDNG2RLL_",  PID),
 	GGROUP(pidNavPitchAirspeed,     "ARSP2PTCH_", PID),
+	GGROUP(pidRNAVPitch,			"RNAV2PTCH_", PID),		//#MD
 	GGROUP(pidTeThrottle,           "ENRGY2THR_", PID),
-	GGROUP(pidRNAVThrottle,			"RNAV2THR_",  PID),
+	GGROUP(pidRNAVThrottle,			"RNAV2THR_",  PID),		//#MD
 	GGROUP(pidNavPitchAltitude,     "ALT2PTCH_",  PID),
 	GGROUP(pidWheelSteer,           "WHEELSTEER_",PID),
 
