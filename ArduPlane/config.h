@@ -658,6 +658,18 @@
 #ifndef THROTTLE_TE_INT_MAX
  # define THROTTLE_TE_INT_MAX  20
 #endif
+#ifndef THROTTLE_RNAV_P						// begin #MD
+ # define THROTTLE_RNAV_P        0.50
+#endif
+#ifndef THROTTLE_RNAV_I
+ # define THROTTLE_RNAV_I        0.0
+#endif
+#ifndef THROTTLE_RNAV_D
+ # define THROTTLE_RNAV_D        0.0
+#endif
+#ifndef THROTTLE_RNAV_INT_MAX
+ # define THROTTLE_RNAV_INT_MAX  20
+#endif										// end #MD
 #ifndef THROTTLE_SLEW_LIMIT
  # define THROTTLE_SLEW_LIMIT  0
 #endif
@@ -670,6 +682,7 @@
 #ifndef PITCH_TARGET
  # define PITCH_TARGET         0
 #endif
+
 
 //////////////////////////////////////////////////////////////////////////////
 // Crosstrack compensation

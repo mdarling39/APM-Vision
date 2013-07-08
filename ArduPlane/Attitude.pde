@@ -157,55 +157,44 @@ static void crash_checker()
 static void calc_throttle()
 {
 
-			int16_t throttle_target;
-
-
-			// #MD  Added some pointers to make variables easier to deal with
-			// point to g.pidTeThrottle and use that object for relative navigation to make
-			// writing params, etc easier.
-			PID *pidDistThrottle = &g.pidTeThrottle;
-
-			// borrow energy error variable and g.airspeed_cruise_cm variable
-			//		energy_error			= distance error  (cm)
-			//		g.airspeed_cruise_cm	= target relative (level) distance (cm)
-			int32_t* distance_error = &energy_error;
-			AP_Int32* target_distance = &g.airspeed_cruise_cm;
-
+	// declare local variables
+	int16_t throttle_target;
+	int32_t distance_error;
 
 
 	switch (control_mode){  // #MD added switch/case flow control and REL_NAV case
 	case REL_NAV:
 
 			wp_distance = rNav->get_level_dist() * 0.01; // cm to meters
-			*distance_error = (rNav->get_level_dist() - (*target_distance));
+			distance_error = (rNav->get_level_dist() - (100*g.target_separation));
 
 
 			throttle_target = g.throttle_cruise;
 
 			
 			//throttle from distance
-			throttle_nudge = pidDistThrottle->get_pid(100*(*distance_error)/(*target_distance));
+			throttle_nudge = g.pidRNAVThrottle.get_pid(100*(distance_error)/(100*g.target_separation));
 
 
 			g.channel_throttle.servo_out = throttle_target + throttle_nudge;
 
 
 			// DEBUG INFO
-			//if (medium_loopCounter == 3) {
-			//	/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
-			//	/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
-			//	/*DBG->print("DistErr: ");*/DBG->print((*distance_error));DBG->print("    ");
-			//	/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
-			//	/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
-			//	/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
-			//}
+			if (medium_loopCounter == 3) {
+				/*DBG->print("WPDist: ");*/DBG->print(rNav->get_level_dist());DBG->print("    ");
+				/*DBG->print("AltErr: ");*/DBG->print(rNav->relative_altitude_error());DBG->print("    ");
+				/*DBG->print("DistErr: ");*/DBG->print(distance_error);DBG->print("    ");
+				/*DBG->print("TargetThrottle: ");*/DBG->print(throttle_target);DBG->print("    ");
+				/*DBG->print("ThrottleNudge: ");*/DBG->print(throttle_nudge);DBG->print("    ");
+				/*DBG->print("ThrottleOut: ");*/DBG->print(g.channel_throttle.servo_out);DBG->print("    ");
+			}
 			
 
 			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
 
-			//if (medium_loopCounter == 3) {
-			//	/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
-			//}
+			if (medium_loopCounter == 3) {
+				/*DBG->print("ThrottleOut: ");*/DBG->println(g.channel_throttle.servo_out);
+			}
 
 			break;
 	default:

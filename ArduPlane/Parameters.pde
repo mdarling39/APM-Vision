@@ -19,6 +19,11 @@ const AP_Param::Info var_info[] PROGMEM = {
     GSCALAR(sysid_this_mav,         "SYSID_THISMAV",  MAV_SYSTEM_ID),
     GSCALAR(sysid_my_gcs,           "SYSID_MYGCS",    255),
 
+	// @Param: TGT_SEPTN
+	// @DisplayName: Target Separation Distance
+	// @Description:  Target separation distance (in meters) of formation
+	GSCALAR(target_separation,		"TGT_SEPTN", 65),  //#MD
+
     // @Param: SERIAL3_BAUD
     // @DisplayName: Telemetry Baud Rate
     // @Description: The baud rate used on the telemetry port
@@ -639,6 +644,7 @@ const AP_Param::Info var_info[] PROGMEM = {
 	GGROUP(pidNavRoll,              "HDNG2RLL_",  PID),
 	GGROUP(pidNavPitchAirspeed,     "ARSP2PTCH_", PID),
 	GGROUP(pidTeThrottle,           "ENRGY2THR_", PID),
+	GGROUP(pidRNAVThrottle,			"RNAV2THR_",  PID),
 	GGROUP(pidNavPitchAltitude,     "ALT2PTCH_",  PID),
 	GGROUP(pidWheelSteer,           "WHEELSTEER_",PID),
 

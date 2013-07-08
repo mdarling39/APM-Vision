@@ -205,6 +205,7 @@ public:
         k_param_fence_channel,
         k_param_fence_minalt,
         k_param_fence_maxalt,
+		k_param_target_separation,		//#MD
 
         // other objects
         k_param_sitl = 230,
@@ -221,6 +222,7 @@ public:
         k_param_pidNavPitchAirspeed,
         k_param_pidServoRudder,
         k_param_pidTeThrottle,
+		k_param_pidRNAVThrottle,		//#MD
         k_param_pidNavPitchAltitude,
         k_param_pidWheelSteer,
 
@@ -266,6 +268,7 @@ public:
     AP_Int8 command_index;
     AP_Int16 waypoint_radius;
     AP_Int16 loiter_radius;
+	AP_Int16 target_separation;		// #MD  For relative navigation
 
 #if GEOFENCE_ENABLED == ENABLED
     AP_Int8 fence_action;
@@ -389,6 +392,7 @@ public:
     PID         pidNavRoll;
     PID         pidNavPitchAirspeed;
     PID         pidTeThrottle;
+	PID			pidRNAVThrottle;		//#MD
     PID         pidNavPitchAltitude;
     PID         pidWheelSteer;
 
@@ -421,6 +425,7 @@ public:
         pidNavRoll          (NAV_ROLL_P,      NAV_ROLL_I,      NAV_ROLL_D,      NAV_ROLL_INT_MAX_CENTIDEGREE),
         pidNavPitchAirspeed (NAV_PITCH_ASP_P, NAV_PITCH_ASP_I, NAV_PITCH_ASP_D, NAV_PITCH_ASP_INT_MAX_CMSEC),
         pidTeThrottle       (THROTTLE_TE_P,   THROTTLE_TE_I,   THROTTLE_TE_D,   THROTTLE_TE_INT_MAX),
+		pidRNAVThrottle		(THROTTLE_RNAV_P, THROTTLE_RNAV_I, THROTTLE_RNAV_D, THROTTLE_RNAV_INT_MAX),				//#MD
         pidNavPitchAltitude (NAV_PITCH_ALT_P, NAV_PITCH_ALT_I, NAV_PITCH_ALT_D, NAV_PITCH_ALT_INT_MAX_CM),
         pidWheelSteer         (0, 0, 0, 0)
 
