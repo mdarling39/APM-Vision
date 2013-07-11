@@ -1147,11 +1147,6 @@ static void update_current_flight_mode(void)
             calc_nav_roll();
             calc_nav_pitch();
             calc_throttle();
-
-			if (medium_loopCounter == 3) {
-				DBG->print(bearing_error_cd/100.0);DBG->print("  ");DBG->println(constrain(rNav->pitch_cmd(), g.pitch_RNAV_min, g.pitch_RNAV_max)/100.0);
-			}
-
             break;
 
         case FLY_BY_WIRE_A: {
