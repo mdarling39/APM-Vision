@@ -83,10 +83,22 @@ public:
 		return -dx_b.z * (2.5400);
 	}
 
-	// get relative bank
+	// get relative x  (inches)
+	double get_relx() {return dx_b.x;};
+
+	// get relative y  (inches)
+	double get_rely() {return dx_b.y;};
+
+	// get relative z  (inches)
+	double get_relz() {return dx_b.z;};
+
+	// get relative bank  (degrees)
 	double get_relBank() {return dphi;};
 
-	// get relative heading
+	// get relative pitch  (degrees)
+	double get_relPitch() {return dtheta;};
+
+	// get relative heading  (degrees)
 	double get_relHdg() {return dpsi;};
 
 	// update the DCM for FF frame

@@ -453,11 +453,11 @@ static uint8_t receiver_rssi;
 
 
 // Global variables to be used by custom throttle controller  #MD
-static int16_t throttle_target;			//#MD
 static int32_t distance_error;			//#MD
 
-// Global variables to be used by lateral controller when in RNAV mode
+// Global variables to be used by lateral and longitudinal controllers when in RNAV mode
 static int32_t roll_error;				//#MD
+static int32_t pitch_error;				//#MD
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -923,6 +923,10 @@ static void medium_loop()
 
         if (g.log_bitmask & MASK_LOG_GPS)
             Log_Write_GPS(g_gps->time, current_loc.lat, current_loc.lng, g_gps->altitude, current_loc.alt, (long) g_gps->ground_speed, g_gps->ground_course, g_gps->fix, g_gps->num_sats);
+
+		// #MD  Adding logs for Relative Nav
+		if (g.log_bitmask & MASK_LOG_RNAV)
+			Log_Write_RNAV(distance_error, throttle_nudge, pitch_error, nav_pitch_cd, roll_error, nav_roll_cd, rNav);
         break;
 
     // This case controls the slow loop
