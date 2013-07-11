@@ -183,6 +183,10 @@ public:
         k_param_kff_throttle_to_pitch,
         k_param_scaling_speed,
 
+		// other gains
+		k_param_k_bank2roll,	//#MD
+		k_param_k_hdg2roll,     //#MD
+
         //
         // 210: flight modes
         //
@@ -248,6 +252,11 @@ public:
     AP_Float kff_rudder_mix;
     AP_Float kff_pitch_to_throttle;
     AP_Float kff_throttle_to_pitch;
+
+	// Other gains
+	//
+	AP_Float k_bank2roll;	//#MD
+	AP_Float k_hdg2roll;	//#MD
 
     // speed used for speed scaling
     AP_Float scaling_speed;

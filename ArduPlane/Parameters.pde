@@ -38,6 +38,16 @@ const AP_Param::Info var_info[] PROGMEM = {
 	// @Description: Maximum pitch error value (100*degrees)
 	GSCALAR(pitch_RNAV_max,		"PTH_MAX_ERR", 1500),  //#MD
 
+	// @Param: K_BNK2ROLL
+	// @DispalyName:  K_BANK2ROLL
+	// @Description:  The relative bank to roll gain
+	GSCALAR(k_bank2roll,		"K_BANK2ROLL", 0),  //#MD
+
+
+	// @Param: K_HDG2ROLL
+	// @DispalyName:  K_HDG2ROLL
+	// @Description:  The relative heading to roll gain
+	GSCALAR(k_hdg2roll,		"K_HDG2ROLL", 0),  //#MD
 
 ///////////////////////////////////////////////////////////////////////
 

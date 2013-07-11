@@ -321,7 +321,15 @@ static void calc_nav_roll()
     nav_gain_scaler = constrain(nav_gain_scaler, 0.2, 1.4);
 
 
-    nav_roll_cd = g.pidNavRoll.get_pid(bearing_error_cd, nav_gain_scaler); //returns desired bank angle in degrees*100
+	if (control_mode == REL_NAV) {
+		
+		roll_error = bearing_error_cd + g.k_bank2roll*(rNav->get_relBank()*100) + g.k_hdg2roll*(rNav->get_relHdg()*100);
+
+		nav_roll_cd = g.pidNavRoll.get_pid(roll_error, nav_gain_scaler); //returns desired bank angle in degrees*100
+	} else {
+		nav_roll_cd = g.pidNavRoll.get_pid(bearing_error_cd, nav_gain_scaler); //returns desired bank angle in degrees*100
+	}
+
 #endif
 
     nav_roll_cd = constrain(nav_roll_cd, -g.roll_limit_cd.get(), g.roll_limit_cd.get());

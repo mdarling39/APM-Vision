@@ -456,6 +456,9 @@ static uint8_t receiver_rssi;
 static int16_t throttle_target;			//#MD
 static int32_t distance_error;			//#MD
 
+// Global variables to be used by lateral controller when in RNAV mode
+static int32_t roll_error;				//#MD
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Ground speed
