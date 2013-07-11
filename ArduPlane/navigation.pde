@@ -20,14 +20,10 @@ static void navigate()
 		rNav->updateDCM(ahrs.roll_sensor,ahrs.pitch_sensor);
 
 		// target bearing is where we should be heading (current heading + relative heading)
-		target_bearing_cd = ahrs.yaw_sensor + rNav->relative_bearing_error();
+		target_bearing_cd = (ahrs.yaw_sensor + rNav->relative_bearing_error()) % 36000;
 
 		// nav_bearing will include xtrac correction
 		nav_bearing_cd = target_bearing_cd;
-
-		// wrap to 360 degrees (36000 centidegrees)
-		target_bearing_cd = target_bearing_cd % 36000;
-		nav_bearing_cd = nav_bearing_cd % 36000;
 
 		break;
 

@@ -75,7 +75,7 @@ public:
 
 	// get pitch_cmd
 	double pitch_cmd(){
-		return 100*(180/M_PI)*atan2(-dx_b.z,dx_b.x);
+		return 100*(180/M_PI)*atan2(-dx_b.z-240,dx_b.x);
 	}
 
 	// get other pitch cmd
@@ -98,10 +98,10 @@ public:
 		//compute relative vector in 
 		dx_ff = DCM * dx_b;
 
-		bearing_err = 100 * atan2(dx_ff.y,dx_ff.x) * (180/M_PI);  // convert to centidegrees
-		altitude_err = -dx_ff.z * (2.5400);  // convert inches to cm
+		bearing_err = 100 * atan2(dx_ff.y+240,dx_ff.x) * (180/M_PI);  // convert to centidegrees  (Add a 10 foot offset to avoid aerodynamic effects)
+		altitude_err = -(dx_ff.z) * (2.5400);  // convert inches to cm
 		
-		level_dist = sqrt( pow(dx_ff.x,2) + pow(dx_ff.y,2) ) * (2.5400);  // convert inches to cm
+		level_dist = sqrt( pow(dx_ff.x,2) + pow(dx_ff.y+240,2) ) * (2.5400);  // convert inches to cm   (add a 10 foot offset to avoid aerodynamic effects)
 	}
 
 

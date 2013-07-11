@@ -157,11 +157,6 @@ static void crash_checker()
 static void calc_throttle()
 {
 
-	// declare local variables
-	int16_t throttle_target;
-	int32_t distance_error;
-
-
 	switch (control_mode){  // #MD added switch/case flow control and REL_NAV case
 	case REL_NAV:
 
@@ -279,15 +274,20 @@ static void calc_nav_pitch()
 			//nav_pitch_cd = g.pidRNAVPitch.get_pid(altitude_error_cm);
 			//nav_pitch_cd = g.pidRNAVPitch.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
 
-			// DEBUG INFO
-			if (medium_loopCounter == 3) {
-				DBG->print(rNav->pitch_cmd()/100.0);DBG->print("  ");DBG->println(nav_pitch_cd/100.0);;
-			}
+			//// DEBUG INFO
+			//if (medium_loopCounter == 3) {
+			//	DBG->print(rNav->pitch_cmd()/100.0);DBG->print("  ");DBG->print(nav_pitch_cd/100.0);
+			//}
 		} else {
 			nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
 		}
     }
     nav_pitch_cd = constrain(nav_pitch_cd, g.pitch_limit_min_cd.get(), g.pitch_limit_max_cd.get());
+				
+	//// DEBUG INFO
+	//if (medium_loopCounter == 3) {
+	//	DBG->print("  ");DBG->println(nav_pitch_cd/100.0);
+	//}
 }
 
 
@@ -319,11 +319,10 @@ static void calc_nav_roll()
     // then remove for a future release
     float nav_gain_scaler = 0.01 * g_gps->ground_speed / g.scaling_speed;
     nav_gain_scaler = constrain(nav_gain_scaler, 0.2, 1.4);
+
+
     nav_roll_cd = g.pidNavRoll.get_pid(bearing_error_cd, nav_gain_scaler); //returns desired bank angle in degrees*100
 #endif
-
-	// DEBUG INFO
-	//DBG->print(bearing_error_cd);DBG->print("  ");DBG->println(nav_gain_scaler);
 
     nav_roll_cd = constrain(nav_roll_cd, -g.roll_limit_cd.get(), g.roll_limit_cd.get());
 }
