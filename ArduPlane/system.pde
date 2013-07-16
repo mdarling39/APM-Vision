@@ -625,6 +625,9 @@ print_flight_mode(uint8_t mode)
     case LOITER:
         cliSerial->println_P(PSTR("Loiter"));
         break;
+	case REL_NAV:
+		cliSerial->println_P(PSTR("REL_NAV"));
+		break;
     default:
         cliSerial->println_P(PSTR("---"));
         break;

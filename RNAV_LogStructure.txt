@@ -1,0 +1,56 @@
+=====  WRITE  =====
+
+VARIABLE NAME		UNITS				TYPE
+
+distance_error		centimeters			long
+
+throttle_nudge		0-100%				int
+
+pitch_error		centidegrees			int
+
+nav_pitch_cd		centidegrees			int
+
+roll_error		centidegrees			int
+
+nav_roll_cd		centidegrees			int
+
+relX			inches				long
+
+relY			inches				long
+
+relZ			inches				long
+
+relBank * 100 		100*degrees			int
+
+relPitch * 100		100*degrees			int
+
+relHdg * 100		100*degrees			int
+
+
+=====  READ  =====
+
+VARIABLE NAME		UNITS				FORMAT SPECIFIER
+
+distance_error		meters				4.2f
+
+throttle_nudge		0-100%				d
+
+pitch_error		degrees				4.2f
+
+nav_pitch_cd		degrees				4.2f
+
+roll_error		degrees				4.2f
+
+nav_roll_cd		degrees				4.2f
+
+relX			inches				ld
+
+relY			inches				ld
+
+relZ			inches				ld
+
+relBank			degrees				4.2f
+
+relPitch		degrees				4.2f
+
+relHdg			degrees				4.2f

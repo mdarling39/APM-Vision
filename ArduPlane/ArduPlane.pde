@@ -925,7 +925,7 @@ static void medium_loop()
             Log_Write_GPS(g_gps->time, current_loc.lat, current_loc.lng, g_gps->altitude, current_loc.alt, (long) g_gps->ground_speed, g_gps->ground_course, g_gps->fix, g_gps->num_sats);
 
 		// #MD  Adding logs for Relative Nav
-		if (g.log_bitmask & MASK_LOG_RNAV)
+		if ((g.log_bitmask & MASK_LOG_RNAV) && (control_mode == REL_NAV))
 			Log_Write_RNAV(distance_error, throttle_nudge, pitch_error, nav_pitch_cd, roll_error, nav_roll_cd, rNav);
         break;
 
