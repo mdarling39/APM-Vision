@@ -9,6 +9,12 @@
 #include "vector3.h"
 #include "matrix3.h"
 
+#define MASK_LED_1		(1<<0)
+#define MASK_LED_2		(1<<1)
+#define MASK_LED_3		(1<<2)
+#define MASK_LED_4		(1<<3)
+#define MASK_LED_5		(1<<4)
+#define MASK_LED_ALL	(MASK_LED_1 | MASK_LED_2 | MASK_LED_3 | MASK_LED_4 | MASK_LED_5)
 
 
 
@@ -170,18 +176,24 @@ public:
 
 					// compare checksums
 					if ( (rNAVSerial->read()) == chk) {
-						receivedData = true;
-						dx_b.x		= payload[0];
-						dx_b.y		= payload[1];
-						dx_b.z		= payload[2];
-						dphi		= payload[3];
-						dtheta		= payload[4];
-						dpsi		= payload[5];
+						receivedData = true;  // we at least received data
 #if HIL_MODE==HIL_MODE_ATTITUDE
 						LED_bitmask = _LED_bitmask;
 #else
 						LED_bitmask = 0xFF;
+
 #endif
+						if ((LED_bitmask & 0x3F) == MASK_LED_ALL) {
+							dx_b.x		= payload[0];
+							dx_b.y		= payload[1];
+							dx_b.z		= payload[2];
+							dphi		= payload[3];
+							dtheta		= payload[4];
+							dpsi		= payload[5];
+						} else {
+							// not all LEDs in the frame
+							Serial1.println("LEDS_MISSING");
+						}
 
 					} else {
 						// checksum did not match read value
