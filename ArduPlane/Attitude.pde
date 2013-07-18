@@ -162,11 +162,9 @@ static void calc_throttle()
 
 			wp_distance = rNav->get_level_dist() * 0.01; // cm to meters
 			distance_error = (rNav->get_level_dist() - (100*g.target_separation));
-
 			
 			//throttle from distance
-			throttle_nudge = g.pidRNAVThrottle.get_pid(100*(distance_error)/(100*g.target_separation));
-
+			throttle_nudge = (rNav->is_timedout()) ? 0 : g.pidRNAVThrottle.get_pid(100*(distance_error)/(100*g.target_separation));
 
 			g.channel_throttle.servo_out = g.throttle_cruise + throttle_nudge;
 
@@ -264,19 +262,15 @@ static void calc_nav_pitch()
     } else {
 		if (control_mode == REL_NAV) {
 
-			pitch_error = constrain(rNav->pitch_cmd(), g.pitch_RNAV_min, g.pitch_RNAV_max);
+			if (!rNav->is_timedout()) {
+				pitch_error = constrain(rNav->pitch_cmd(), g.pitch_RNAV_min, g.pitch_RNAV_max);
+			} else {
+				pitch_error = -ahrs.pitch_sensor; // try and fly level
+			}
 
 			//#MD  Try to actually point at the leader and let altitude take care of itself?
 			nav_pitch_cd = g.pidRNAVPitch.get_pid(pitch_error);
 
-			// Alternative approaches for pitch control
-			//nav_pitch_cd = g.pidRNAVPitch.get_pid(altitude_error_cm);
-			//nav_pitch_cd = g.pidRNAVPitch.get_pid(rNav->bz());             //#MD  Try to pitch to get z distance to be zero
-
-			//// DEBUG INFO 
-			//if (medium_loopCounter == 3) {
-			//	DBG->print(rNav->pitch_cmd()/100.0);DBG->print("  ");DBG->print(nav_pitch_cd/100.0);
-			//}
 		} else {
 			nav_pitch_cd = g.pidNavPitchAltitude.get_pid(altitude_error_cm);
 		}
@@ -323,7 +317,11 @@ static void calc_nav_roll()
 	if (control_mode == REL_NAV) {
 		
 		// modified feedback error signal
-		roll_error = bearing_error_cd + g.k_bank2roll*(rNav->get_relBank()*100) + g.k_hdg2roll*(rNav->get_relHdg()*100);
+		if (!rNav->is_timedout()) {
+			roll_error = bearing_error_cd + g.k_bank2roll*(rNav->get_relBank()*100) + g.k_hdg2roll*(rNav->get_relHdg()*100);
+		} else {
+			roll_error = -ahrs.roll_sensor;
+		}
 
 		nav_roll_cd = g.pidNavRoll.get_pid(roll_error, nav_gain_scaler); //returns desired bank angle in degrees*100
 	} else {

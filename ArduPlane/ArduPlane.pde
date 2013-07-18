@@ -857,8 +857,9 @@ static void medium_loop()
 
 		// Get the Rel. NAV solution over serial		//begin #MD
 		if (control_mode == REL_NAV) {
-			if (!rNav->update()) //Screw it... try every time
+			if (!rNav->update()) {
 				DBG->println("NO SERIAL DATA");
+			}
 		} //end #MD
 
         break;
