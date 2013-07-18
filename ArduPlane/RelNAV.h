@@ -9,6 +9,9 @@
 #include "vector3.h"
 #include "matrix3.h"
 
+// defines for LED bitmask
+
+#define RNAV_LOST_LINK_TIMEOUT		5000		// milliseconds
 #define MASK_LED_1		(1<<0)
 #define MASK_LED_2		(1<<1)
 #define MASK_LED_3		(1<<2)
@@ -34,6 +37,9 @@ protected:
 	int32_t altitude_err;   // cm
 	int32_t level_dist;		// level distance between aircraft (cm)
 
+	unsigned long timer;	// time of the last succesful localization
+	bool timeout;
+
 public:
 
 
@@ -50,6 +56,8 @@ public:
 		bearing_err = 0;
 		altitude_err = 0;
 
+		timer = millis();
+		timeout = false;
 	};
 
 
@@ -66,50 +74,40 @@ public:
 
 
 	// get relative bearing error
-	int32_t relative_bearing_error(){
-		return bearing_err;
-	}
+	int32_t relative_bearing_error() {return (timeout) ? 0 : bearing_err;};
 
 	// get relative altitude error
-	int32_t relative_altitude_error(){
-		return altitude_err;
-	}
+	int32_t relative_altitude_error() {return (timeout) ? 0 : altitude_err;};
 
 	// get level distance between aircraft
-	int32_t get_level_dist(){
-		return level_dist;
-	}
+	int32_t get_level_dist() {return (timeout) ? 0 : level_dist;};
 
 	// get pitch_cmd
-	double pitch_cmd(){
-		return 100*(180/M_PI)*atan2(-dx_b.z,dx_b.x);
-	}
-
-	// get other pitch cmd
-	double bz(){
-		return -dx_b.z * (2.5400);
-	}
+	double pitch_cmd() {return (timeout) ? 0 : 100*(180/M_PI)*atan2(-dx_b.z,dx_b.x);};
 
 	// get relative x  (inches)
-	double get_relx() {return dx_b.x;};
+	double get_relx() {return (timeout) ? 0 : dx_b.x;};
 
 	// get relative y  (inches)
-	double get_rely() {return dx_b.y;};
+	double get_rely() {return (timeout) ? 0 : dx_b.y;};
 
 	// get relative z  (inches)
-	double get_relz() {return dx_b.z;};
+	double get_relz() {return (timeout) ? 0 : dx_b.z;};
 
 	// get relative bank  (degrees)
-	double get_relBank() {return dphi;};
+	double get_relBank() {return (timeout) ? 0 : dphi;};
 
 	// get relative pitch  (degrees)
-	double get_relPitch() {return dtheta;};
+	double get_relPitch() {return (timeout) ? 0 : dtheta;};
 
 	// get relative heading  (degrees)
-	double get_relHdg() {return dpsi;};
+	double get_relHdg() {return (timeout) ? 0: dphi;};
 
 	// get the LED_bitmask
 	byte get_LED_bitmask() {return LED_bitmask;};
+
+	// check if timeout has occurred
+	bool is_timedout() {return timeout;};
 
 	// update the DCM for FF frame
 	void updateDCM(int32_t roll_centi, int32_t pitch_centi) {
@@ -119,11 +117,18 @@ public:
 
 		//compute relative vector in 
 		dx_ff = DCM * dx_b;
+			
+		timeout = ((millis() - timer) > RNAV_LOST_LINK_TIMEOUT) ? true : false;
 
-		bearing_err = 100 * atan2(dx_ff.y,dx_ff.x) * (180/M_PI);  // convert to centidegrees
-		altitude_err = -(dx_ff.z) * (2.5400);  // convert inches to cm
-		
-		level_dist = sqrt( pow(dx_ff.x,2) + pow(dx_ff.y,2) ) * (2.5400);  // convert inches to cm
+		if (!timeout) {
+			bearing_err = 100 * atan2(dx_ff.y,dx_ff.x) * (180/M_PI);  // convert to centidegrees
+			altitude_err = -(dx_ff.z) * (2.5400);  // convert inches to cm
+			level_dist = sqrt( pow(dx_ff.x,2) + pow(dx_ff.y,2) ) * (2.5400);  // convert inches to cm
+		} else {
+			bearing_err = 0;
+			altitude_err = 0;
+			level_dist = 0;
+		}
 	}
 
 
@@ -184,12 +189,16 @@ public:
 
 #endif
 						if ((LED_bitmask & 0x3F) == MASK_LED_ALL) {
+							// Everything worked -- YAY!  :)
 							dx_b.x		= payload[0];
 							dx_b.y		= payload[1];
 							dx_b.z		= payload[2];
 							dphi		= payload[3];
 							dtheta		= payload[4];
 							dpsi		= payload[5];
+							
+							timer = millis();  // reset the timer	 
+
 						} else {
 							// not all LEDs in the frame
 							Serial1.println("LEDS_MISSING");
