@@ -351,6 +351,7 @@ static void Log_Write_GPS(      int32_t log_Time, int32_t log_Lattitude, int32_t
 // write an RNAV packet.  Total length : ?? bytes
 static void Log_Write_RNAV(		int32_t distance_error, int16_t throttle_nudge, int32_t pitch_error, int32_t nav_pitch_cd, int32_t roll_error,
 								int32_t nav_roll_cd, RelNAV* rNav)
+					
 
 {
 	DataFlash.WriteByte(HEAD_BYTE1);
@@ -368,6 +369,7 @@ static void Log_Write_RNAV(		int32_t distance_error, int16_t throttle_nudge, int
 	DataFlash.WriteInt((int) (rNav->get_relBank()*100));
 	DataFlash.WriteInt((int) (rNav->get_relPitch()*100));
 	DataFlash.WriteInt((int) (rNav->get_relHdg()*100));
+	DataFlash.WriteInt((int) (rNav->get_LED_bitmask()));
 	DataFlash.WriteByte(END_BYTE);
 }
 
@@ -548,7 +550,7 @@ static void Log_Read_GPS()
 static void Log_Read_RNAV()
 {
 	int32_t l[4];
-	int16_t i[8];
+	int16_t i[9];
 	l[0] = DataFlash.ReadLong();
 	i[0] = DataFlash.ReadInt();
 	i[1] = DataFlash.ReadInt();
@@ -561,10 +563,12 @@ static void Log_Read_RNAV()
 	i[5] = DataFlash.ReadInt();
 	i[6] = DataFlash.ReadInt();
 	i[7] = DataFlash.ReadInt();
-	cliSerial->printf_P(PSTR("RNAV: %4.2f, %d, %4.2f, %4.2f, %4.2f, %4.2f, %ld, %ld, %ld, %4.2f, %4.2f, %4.2f,\n"),
+	i[8] = DataFlash.ReadInt();
+	cliSerial->printf_P(PSTR("RNAV: %4.2f, %d, %4.2f, %4.2f, %4.2f, %4.2f, %ld, %ld, %ld, %4.2f, %4.2f, %4.2f, %d\n"),
 				l[0]/100., i[0],
 				i[1]/100., i[2]/100., i[3]/100., i[4]/100.,
-				l[1], l[2], l[3], i[5]/100., i[6]/100., i[7]/100.);
+				l[1], l[2], l[3], i[5]/100., i[6]/100., i[7]/100.,
+				i[8]);
 }
 
 // Read a raw accel/gyro packet

@@ -26,6 +26,8 @@ relPitch * 100		100*degrees			int
 
 relHdg * 100		100*degrees			int
 
+**LED_bitmask**		(bitmask)			int  (byte not available)
+
 
 =====  READ  =====
 
@@ -54,3 +56,5 @@ relBank			degrees				4.2f
 relPitch		degrees				4.2f
 
 relHdg			degrees				4.2f
+
+**LED_bitmask**		###-----			eg. 31 = 00011111

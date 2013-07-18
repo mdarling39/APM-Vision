@@ -19,6 +19,7 @@ protected:
 	Vector3<float> dx_b;			// relative vector in follower's body frame (inches)
 	Vector3<float> dx_ff;			// relative vector in formation frame (inches)
 	float dphi, dtheta, dpsi;		// relative Euler angles (degrees)
+	byte LED_bitmask;				// gives the LEDs that are within the frame (when using HIL_MODE_ATTITUDE)
 
 	Matrix3<float> DCM;
 	FastSerial* rNAVSerial;
@@ -101,6 +102,9 @@ public:
 	// get relative heading  (degrees)
 	double get_relHdg() {return dpsi;};
 
+	// get the LED_bitmask
+	byte get_LED_bitmask() {return LED_bitmask;};
+
 	// update the DCM for FF frame
 	void updateDCM(int32_t roll_centi, int32_t pitch_centi) {
 		// update DCM for body to Formation Frame
@@ -121,7 +125,7 @@ public:
 	// listen over serial port for relative navigation update
 	boolean update() {
 		
-			uint8_t incomingByte;
+			byte incomingByte, _LED_bitmask;
 			boolean receivedData = false;
 			float payload[6];
 
@@ -135,8 +139,12 @@ public:
 				uint8_t payload_len = rNAVSerial->read();
 				chk = chk ^ payload_len;
 
-				if ((payload_len==6) && (rNAVSerial->available() >= (4*payload_len + 1)) ) {
 
+#if HIL_MODE==HIL_MODE_ATTITUDE
+				if ((payload_len==6) && (rNAVSerial->available() >= (4*payload_len + 2)) ) {
+#else
+				if ((payload_len==6) && (rNAVSerial->available() >= (4*payload_len + 1)) ) {
+#endif
 					for (int i = 0; i<payload_len; i++) {
 
 						union {
@@ -154,6 +162,12 @@ public:
 						payload[i] = pld.f;
 					}
 
+#if HIL_MODE == HIL_MODE_ATTITUDE
+					// read the bitmask that gives the LEDs in the field of view
+						_LED_bitmask = rNAVSerial->read();
+						chk = chk ^ _LED_bitmask;
+#endif
+
 					// compare checksums
 					if ( (rNAVSerial->read()) == chk) {
 						receivedData = true;
@@ -163,6 +177,11 @@ public:
 						dphi		= payload[3];
 						dtheta		= payload[4];
 						dpsi		= payload[5];
+#if HIL_MODE==HIL_MODE_ATTITUDE
+						LED_bitmask = _LED_bitmask;
+#else
+						LED_bitmask = 0xFF;
+#endif
 
 					} else {
 						// checksum did not match read value
