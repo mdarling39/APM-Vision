@@ -184,6 +184,9 @@ public:
         k_param_scaling_speed,
 
 		// other gains
+		k_param_k1_bank,		//#MD
+		k_param_k3_bank,		//#MD
+		k_param_k5_bank,		//#MD
 		k_param_k_bank2roll,	//#MD
 		k_param_k_hdg2roll,     //#MD
 
@@ -257,6 +260,9 @@ public:
 	//
 	AP_Float k_bank2roll;	//#MD
 	AP_Float k_hdg2roll;	//#MD
+	AP_Float k1_bank;		//#MD
+	AP_Float k3_bank;		//#MD
+	AP_Float k5_bank;		//#MD
 
     // speed used for speed scaling
     AP_Float scaling_speed;

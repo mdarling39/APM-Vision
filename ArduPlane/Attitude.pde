@@ -79,13 +79,14 @@ static void stabilize()
 	// Calculate dersired servo output for the roll
 	// ---------------------------------------------
 	g.channel_roll.servo_out = g.pidServoRoll.get_pid((nav_roll_cd - ahrs.roll_sensor), speed_scaler);
-	if(control_mode == RNAV) {
-	int32_t tempcalc = nav_pitch_cd - ahrs.pitch_sensor;// +  // #MD  modify to actually drive pitch to what is desired
+	int32_t tempcalc;
+	if(control_mode == REL_NAV) {
+	tempcalc = nav_pitch_cd - ahrs.pitch_sensor;// +  // #MD  modify to actually drive pitch to what is desired
 	        //fabs(ahrs.roll_sensor * g.kff_pitch_compensation) +
 	        //(g.channel_throttle.servo_out * g.kff_throttle_to_pitch) -
 	        //(ahrs.pitch_sensor - g.pitch_trim_cd);
 	} else {
-		int32_t tempcalc = nav_pitch_cd - ahrs.pitch_sensor +
+		tempcalc = nav_pitch_cd - ahrs.pitch_sensor +
 	        fabs(ahrs.roll_sensor * g.kff_pitch_compensation) +
 	        (g.channel_throttle.servo_out * g.kff_throttle_to_pitch) -
 	        (ahrs.pitch_sensor - g.pitch_trim_cd);
@@ -325,7 +326,11 @@ static void calc_nav_roll()
 		
 		// modified feedback error signal
 		if (!rNav->is_timedout()) {
-			roll_error = bearing_error_cd + g.k_bank2roll*(rNav->get_relBank()*100) + g.k_hdg2roll*(rNav->get_relHdg()*100);
+			// x = linspace(-25,25);
+			// close all;k1 = 1; k3 = 0.7; k5 = 0.8;plot(x,k1*x,'--');hold on;plot(x,k1*x + 1e-2*k3*sign(x).*abs(x.^3) + 1e-5*k5*sign(x).*abs(x.^5));
+			int sign = (bearing_error_cd>=0)?1:-1;
+			roll_error = g.k1_bank*bearing_error_cd + 1e-2*g.k3_bank*sign*100*fabs(pow(bearing_error_cd/100,3)) + 1e-5*g.k5_bank*sign*100*fabs(pow(bearing_error_cd/100,5))
+				         + g.k_bank2roll*(rNav->get_relBank()*100) + g.k_hdg2roll*(rNav->get_relHdg()*100);
 		} else {
 			roll_error = -ahrs.roll_sensor;
 		}

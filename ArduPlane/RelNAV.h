@@ -117,7 +117,7 @@ public:
 
 		//compute relative vector in 
 		dx_ff = DCM * dx_b;
-			
+
 		timeout = ((millis() - timer) > RNAV_LOST_LINK_TIMEOUT) ? true : false;
 
 		if (!timeout) {
@@ -127,7 +127,7 @@ public:
 		} else {
 			bearing_err = 0;
 			altitude_err = 0;
-			level_dist = 0;
+			level_dist = g.target_separation;
 		}
 	}
 
@@ -135,94 +135,93 @@ public:
 
 	// listen over serial port for relative navigation update
 	boolean update() {
-		
-			byte incomingByte, _LED_bitmask;
-			boolean receivedData = false;
-			float payload[6];
 
-			if (rNAVSerial->available() >= 5) {
-
-				// check for message header
-				rNAVSerial->find("DATA");
-				uint8_t chk = 'D' ^ 'A' ^ 'T' ^ 'A';
-
-				// get the payload length and make sure it has a length of 6
-				uint8_t payload_len = rNAVSerial->read();
-				chk = chk ^ payload_len;
-
+		byte incomingByte, _LED_bitmask;
+		boolean receivedData = false;
+		float payload[6];
+		int payload_len = 6, expected_len;
 
 #if HIL_MODE==HIL_MODE_ATTITUDE
-				if ((payload_len==6) && (rNAVSerial->available() >= (4*payload_len + 2)) ) {
+		expected_len = 30;
 #else
-				if ((payload_len==6) && (rNAVSerial->available() >= (4*payload_len + 1)) ) {
+		expected_len = 29;
 #endif
-					for (int i = 0; i<payload_len; i++) {
 
-						union {
-							uint8_t b[4];
-							float f;
-						} pld;
+		Serial1.println(rNAVSerial->available());
+		
+		//unsigned int tic = millis();
+		//while ((rNAVSerial->available() < expected_len) && (millis() - tic > 5)) {}
 
-						pld.b[0] = rNAVSerial->read();
-						pld.b[1] = rNAVSerial->read();
-						pld.b[2] = rNAVSerial->read();
-						pld.b[3] = rNAVSerial->read();
+		if (rNAVSerial->available() >= expected_len) {
 
-						chk = chk ^ pld.b[0] ^ pld.b[1] ^ pld.b[2] ^ pld.b[3];
+			// check for message header
+			rNAVSerial->find("DATA");
+			uint8_t chk = 'D' ^ 'A' ^ 'T' ^ 'A';
 
-						payload[i] = pld.f;
-					}
+			for (int i = 0; i<payload_len; i++) {
+
+				union {
+					uint8_t b[4];
+					float f;
+				} pld;
+
+				pld.b[0] = rNAVSerial->read();
+				pld.b[1] = rNAVSerial->read();
+				pld.b[2] = rNAVSerial->read();
+				pld.b[3] = rNAVSerial->read();
+
+				chk = chk ^ pld.b[0] ^ pld.b[1] ^ pld.b[2] ^ pld.b[3];
+
+				payload[i] = pld.f;
+			}
 
 #if HIL_MODE == HIL_MODE_ATTITUDE
-					// read the bitmask that gives the LEDs in the field of view
-						_LED_bitmask = rNAVSerial->read();
-						chk = chk ^ _LED_bitmask;
+			// read the bitmask that gives the LEDs in the field of view
+			_LED_bitmask = rNAVSerial->read();
+			chk = chk ^ _LED_bitmask;
 #endif
 
-					// compare checksums
-					if ( (rNAVSerial->read()) == chk) {
-						receivedData = true;  // we at least received data
+			// compare checksums
+			if ( (rNAVSerial->read()) == chk) {
+				receivedData = true;  // we at least received data
 #if HIL_MODE==HIL_MODE_ATTITUDE
-						LED_bitmask = _LED_bitmask;
+				LED_bitmask = _LED_bitmask;
 #else
-						LED_bitmask = 0xFF;
-
+				LED_bitmask = 0xFF;
 #endif
-						if ((LED_bitmask & 0x3F) == MASK_LED_ALL) {
-							// Everything worked -- YAY!  :)
-							dx_b.x		= payload[0];
-							dx_b.y		= payload[1];
-							dx_b.z		= payload[2];
-							dphi		= payload[3];
-							dtheta		= payload[4];
-							dpsi		= payload[5];
-							
-							timer = millis();  // reset the timer	 
+				if ((LED_bitmask & 0x3F) == MASK_LED_ALL) {
+					// Everything worked -- YAY!  :)
+					dx_b.x		= payload[0];
+					dx_b.y		= payload[1];
+					dx_b.z		= payload[2];
+					dphi		= payload[3];
+					dtheta		= payload[4];
+					dpsi		= payload[5];
 
-						} else {
-							// not all LEDs in the frame
-							Serial1.println("LEDS_MISSING");
-						}
-
-					} else {
-						// checksum did not match read value
-					}
+					timer = millis();  // reset the timer	 
 
 				} else {
-					// there were not enough bytes in the buffer to read the paylaod
+					// not all LEDs in the frame
+					Serial1.println("LEDS_MISSING");
 				}
 
 			} else {
-				// There wasn't enough data in the buffer to read a header message
+				// checksum did not match read value
+				Serial1.println("A");
 			}
 
-			// request data for next time
-			rNAVSerial->println("H");
+		} else {
+			// the entire message is not available
+		}
 
 
-			return receivedData;
+		// request data for next time
+		if (rNAVSerial->available() > 2*expected_len) rNAVSerial->readBytes(NULL,rNAVSerial->available() - 2*expected_len);
+		rNAVSerial->println("HHHHH");
 
-		} // end #MD
+
+		return receivedData;
+	} // end #MD
 
 };
 

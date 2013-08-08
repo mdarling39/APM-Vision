@@ -49,6 +49,10 @@ const AP_Param::Info var_info[] PROGMEM = {
 	// @Description:  The relative heading to roll gain
 	GSCALAR(k_hdg2roll,		"K_HDG2ROLL", 0),  //#MD
 
+	GSCALAR(k1_bank,	"K1_BANK", 1),	//#MD
+	GSCALAR(k3_bank,	"K3_BANK",0),	//#MD
+	GSCALAR(k5_bank,	"K5_BANK",0),	//#MD
+
 ///////////////////////////////////////////////////////////////////////
 
     // @Param: SERIAL3_BAUD
