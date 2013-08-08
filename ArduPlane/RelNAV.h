@@ -127,7 +127,7 @@ public:
 		} else {
 			bearing_err = 0;
 			altitude_err = 0;
-			level_dist = g.target_separation;
+			level_dist = 0;
 		}
 	}
 

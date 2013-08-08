@@ -172,7 +172,13 @@ static void calc_throttle()
 			distance_error = (rNav->get_level_dist() - (100*g.target_separation));
 			
 			//throttle from distance
-			throttle_nudge = (rNav->is_timedout()) ? 0 : g.pidRNAVThrottle.get_pid(100*(distance_error)/(100*g.target_separation));
+			if ((rNav->get_level_dist() == 0)
+				&& (rNav->relative_bearing_error() == 0)
+				&& (rNav->relative_altitude_error() == 0)) { // steady-level
+				throttle_nudge = 0;
+			} else {
+				throttle_nudge = (rNav->is_timedout()) ? 0 : g.pidRNAVThrottle.get_pid(100*(distance_error)/(100*g.target_separation));
+			}
 
 			g.channel_throttle.servo_out = g.throttle_cruise + throttle_nudge;
 
