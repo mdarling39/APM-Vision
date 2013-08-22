@@ -189,7 +189,7 @@ public:
 #else
 				LED_bitmask = 0xFF;
 #endif
-				if ((LED_bitmask & 0x3F) == MASK_LED_ALL) {
+				if ((LED_bitmask & 0x1F) == MASK_LED_ALL) {
 					// Everything worked -- YAY!  :)
 					dx_b.x		= payload[0];
 					dx_b.y		= payload[1];
