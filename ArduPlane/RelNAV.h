@@ -101,7 +101,7 @@ public:
 	double get_relPitch() {return (timeout) ? 0 : dtheta;};
 
 	// get relative heading  (degrees)
-	double get_relHdg() {return (timeout) ? 0: dphi;};
+	double get_relHdg() {return (timeout) ? 0: dpsi;};
 
 	// get the LED_bitmask
 	byte get_LED_bitmask() {return LED_bitmask;};
