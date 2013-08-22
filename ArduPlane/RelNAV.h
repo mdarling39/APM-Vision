@@ -207,7 +207,6 @@ public:
 
 			} else {
 				// checksum did not match read value
-				Serial1.println("A");
 			}
 
 		} else {
