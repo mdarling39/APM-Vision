@@ -147,7 +147,7 @@ public:
 		expected_len = 29;
 #endif
 
-		Serial1.println(rNAVSerial->available());
+		//Serial1.println(rNAVSerial->available());
 		
 		//unsigned int tic = millis();
 		//while ((rNAVSerial->available() < expected_len) && (millis() - tic > 5)) {}

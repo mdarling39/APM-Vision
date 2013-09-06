@@ -70,7 +70,8 @@ enum FlightMode {
     LOITER = 12,
     GUIDED = 15,
     INITIALISING = 16,
-	REL_NAV = 17		//#MD
+	REL_NAV = 17,		//#MD
+	AUTO_LED = 18
 };
 
 

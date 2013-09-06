@@ -488,6 +488,8 @@ static float current_amps1;
 // Totalized current (Amp-hours) from battery 1
 static float current_total1;
 
+static bool LED_Switch = false;		//MD
+
 // To Do - Add support for second battery pack
 //static float  battery_voltage2    = LOW_VOLTAGE * 1.05;		// Battery 2 Voltage, initialized above threshold for filter
 //static float	current_amps2;									// Current (Amperes) draw from battery 2
@@ -945,6 +947,7 @@ static void medium_loop()
         }
 
         slow_loop();
+		
 
 #if OBC_FAILSAFE == ENABLED
         // perform OBC failsafe checks
@@ -1007,6 +1010,9 @@ static void slow_loop()
 
         break;
     }
+
+	// Relay for LEDs (leader) on pin A0:  +5V ON, 0V OFF
+	(LED_Switch == true) ? digitalWrite(A0,0x1) : digitalWrite(A0,0x0);
 }
 
 static void one_second_loop()
