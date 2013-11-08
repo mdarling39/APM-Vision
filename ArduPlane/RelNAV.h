@@ -6,8 +6,11 @@
 #include <AP_AHRS.h>
 #include <FastSerial.h>
 #include <math.h>
+#include "APM_Config.h"
+#include "CustomIncludes.h"
 #include "vector3.h"
 #include "matrix3.h"
+//typedef unsigned char byte;  // May need to typedef "byte" type in .h file for compilation outside of VM
 
 // defines for LED bitmask
 
@@ -18,9 +21,6 @@
 #define MASK_LED_4		(1<<3)
 #define MASK_LED_5		(1<<4)
 #define MASK_LED_ALL	(MASK_LED_1 | MASK_LED_2 | MASK_LED_3 | MASK_LED_4 | MASK_LED_5)
-
-
-
 
 class RelNAV {
 protected:
@@ -190,7 +190,7 @@ public:
 				if ((LED_bitmask & 0x1F) == MASK_LED_ALL) {
 					if (isnan(payload[0]))  // expect NaN on failed pose estimate
 					{
-						Serial1.println("ZOH");
+						DBG->println("ZOH");
 					} else {
 
 					// Everything worked -- YAY!  :)
@@ -204,23 +204,23 @@ public:
 					timer = millis();  // reset the timer
 
 					// Print the relative state read from serial
-					Serial1.print(dx_b.x); Serial1.print("  "); Serial1.print(dx_b.y); Serial1.print("  "); Serial1.print(dx_b.z); Serial1.print("  ");
-					Serial1.print(dphi); Serial1.print("  "); Serial1.print(dtheta); Serial1.print("  "); Serial1.println(dpsi);
+					DBG->print(dx_b.x); Serial1.print("  "); Serial1.print(dx_b.y); Serial1.print("  "); Serial1.print(dx_b.z); Serial1.print("  ");
+					DBG->print(dphi); Serial1.print("  "); Serial1.print(dtheta); Serial1.print("  "); Serial1.println(dpsi);
 					}
 
 				} else {
 					// not all LEDs in the frame
-					Serial1.println("LEDS_MISSING");
+					DBG->println("LEDS_MISSING");
 				}
 
 			} else {
 				// checksum did not match read value
-				Serial1.println("BAD_CHKSM");
+				DBG->println("BAD_CHKSM");
 			}
 
 		} else {
 			// the entire message is not available
-			Serial1.println("NO_MSG");
+			DBG->println("NO_MSG");
 		}
 
 
