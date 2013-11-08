@@ -141,11 +141,8 @@ public:
 		float payload[6];
 		int payload_len = 6, expected_len;
 
-#if HIL_MODE==HIL_MODE_ATTITUDE
+		// We always expect this length of message now
 		expected_len = 30;
-#else
-		expected_len = 29;
-#endif
 
 		//Serial1.println(rNAVSerial->available());
 		
@@ -175,14 +172,15 @@ public:
 				payload[i] = pld.f;
 			}
 
-#if HIL_MODE == HIL_MODE_ATTITUDE
+
+//#if HIL_MODE == HIL_MODE_ATTITUDE
 			// read the bitmask that gives the LEDs in the field of view
 			_LED_bitmask = rNAVSerial->read();
 			chk = chk ^ _LED_bitmask;
-#endif
+//#endif
 
 			// compare checksums
-			if ( (rNAVSerial->read()) == chk) {
+			if ( rNAVSerial->read() == chk) {
 				receivedData = true;  // we at least received data
 #if HIL_MODE==HIL_MODE_ATTITUDE
 				LED_bitmask = _LED_bitmask;
@@ -190,6 +188,11 @@ public:
 				LED_bitmask = 0xFF;
 #endif
 				if ((LED_bitmask & 0x1F) == MASK_LED_ALL) {
+					if (isnan(payload[0]))  // expect NaN on failed pose estimate
+					{
+						Serial1.println("ZOH");
+					} else {
+
 					// Everything worked -- YAY!  :)
 					dx_b.x		= payload[0];
 					dx_b.y		= payload[1];
@@ -198,7 +201,12 @@ public:
 					dtheta		= payload[4];
 					dpsi		= payload[5];
 
-					timer = millis();  // reset the timer	 
+					timer = millis();  // reset the timer
+
+					// Print the relative state read from serial
+					Serial1.print(dx_b.x); Serial1.print("  "); Serial1.print(dx_b.y); Serial1.print("  "); Serial1.print(dx_b.z); Serial1.print("  ");
+					Serial1.print(dphi); Serial1.print("  "); Serial1.print(dtheta); Serial1.print("  "); Serial1.println(dpsi);
+					}
 
 				} else {
 					// not all LEDs in the frame
@@ -207,10 +215,12 @@ public:
 
 			} else {
 				// checksum did not match read value
+				Serial1.println("BAD_CHKSM");
 			}
 
 		} else {
 			// the entire message is not available
+			Serial1.println("NO_MSG");
 		}
 
 
