@@ -16,7 +16,7 @@
 // simulation. Remove the leading "/* and trailing "*/" to enable:
 
 #define HIL_MODE            HIL_MODE_ATTITUDE//HIL_MODE_DISABLED
-#define MY_DEBUG			1
+#define MY_DEBUG			1 // Will automatically be set to 0 (false) if HIL_MODE_DISABLED
 
 /*
  *  // HIL_MODE SELECTION

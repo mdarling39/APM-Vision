@@ -98,12 +98,6 @@ FastSerialPort3(Serial3);        // Telemetry port for APM1
 // port to use for command line interface
 static FastSerial *cliSerial = &Serial;
 
-// port to use for debugging  #MD
-#if MY_DEBUG
-	FastSerial* DBG = &Serial1;
-#else
-	FastSerial* DBG = NULL;
-#endif
 
 // this sets up the parameter table, and sets the default values. This
 // must be the first AP_Param variable declared to ensure its
