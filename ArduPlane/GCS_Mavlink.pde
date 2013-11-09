@@ -46,6 +46,7 @@ static NOINLINE void send_heartbeat(mavlink_channel_t chan)
         base_mode = MAV_MODE_FLAG_STABILIZE_ENABLED;
         break;
     case AUTO:
+	case REL_NAV: //#MD
     case RTL:
     case LOITER:
     case GUIDED:
@@ -163,6 +164,7 @@ static NOINLINE void send_extended_status1(mavlink_channel_t chan, uint16_t pack
         break;
 
     case AUTO:
+	case REL_NAV:	//#MD
     case RTL:
     case LOITER:
     case GUIDED:
@@ -1166,6 +1168,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         case FLY_BY_WIRE_A:
         case FLY_BY_WIRE_B:
         case AUTO:
+		case REL_NAV: //#MD
         case RTL:
         case LOITER:
             set_mode((enum FlightMode)packet.custom_mode);
