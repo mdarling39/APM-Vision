@@ -143,8 +143,6 @@ public:
 
 		// We always expect this length of message now
 		expected_len = 30;
-
-		//Serial1.println(rNAVSerial->available());
 		
 		//unsigned int tic = millis();
 		//while ((rNAVSerial->available() < expected_len) && (millis() - tic > 5)) {}
@@ -204,8 +202,8 @@ public:
 					timer = millis();  // reset the timer
 
 					// Print the relative state read from serial
-					DBG->print(dx_b.x); Serial1.print("  "); Serial1.print(dx_b.y); Serial1.print("  "); Serial1.print(dx_b.z); Serial1.print("  ");
-					DBG->print(dphi); Serial1.print("  "); Serial1.print(dtheta); Serial1.print("  "); Serial1.println(dpsi);
+					DBG->print(dx_b.x); DBG->print("  "); DBG->print(dx_b.y); DBG->print("  "); DBG->print(dx_b.z); DBG->print("  ");
+					DBG->print(dphi); DBG->print("  "); DBG->print(dtheta); DBG->print("  "); DBG->println(dpsi);
 					}
 
 				} else {
