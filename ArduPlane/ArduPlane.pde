@@ -856,9 +856,10 @@ static void medium_loop()
 		if (control_mode == REL_NAV) {
 		static bool have_rnav, last_have_rnav;
 		have_rnav = rNav->update();
+		have_position = have_rnav;  // "have_position" must be set to enter the navigation loop
 			if (have_rnav) {
 				if (have_rnav != last_have_rnav)
-					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial communication"));
+					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial comm"));
 			} else {
 				DBG_PRINTLN("NO SERIAL DATA");
 				if (have_rnav != last_have_rnav)
