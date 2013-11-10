@@ -2,7 +2,7 @@
 #define _VSARDUINO_H_
 //Board = Arduino Mega 2560 or Mega ADK
 #define __AVR_ATmega2560__
-#define ARDUINO 101
+#define ARDUINO 105
 #define __AVR__
 #define F_CPU 16000000L
 #define __cplusplus
@@ -254,32 +254,32 @@ static void print_comma(void);
 static void print_hit_enter();
 static void test_wp_print(struct Location *cmd, byte wp_index);
 
-#include "C:\Documents and Settings\Michael Darling\Desktop\ArduPilot IDE\hardware\arduino\variants\mega\pins_arduino.h" 
-#include "C:\Documents and Settings\Michael Darling\Desktop\ArduPilot IDE\hardware\arduino\cores\arduino\arduino.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\ArduPlane.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\APM_Config.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\Attitude.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\CustomIncludes.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\GCS.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\GCS_Mavlink.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\Log.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\Parameters.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\Parameters.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\RelNAV.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\climb_rate.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\commands.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\commands_logic.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\commands_process.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\config.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\control_modes.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\defines.h"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\events.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\failsafe.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\geofence.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\navigation.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\radio.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\sensors.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\setup.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\system.pde"
-#include "C:\Documents and Settings\Michael Darling\Desktop\Arduino_Follower\ArduPlane\test.pde"
+#include "C:\Program Files (x86)\Arduino\hardware\arduino\variants\mega\pins_arduino.h" 
+#include "C:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino\arduino.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\ArduPlane.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\APM_Config.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\Attitude.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\CustomIncludes.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\GCS.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\GCS_Mavlink.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\Log.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\Parameters.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\Parameters.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\RelNAV.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\climb_rate.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\commands.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\commands_logic.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\commands_process.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\config.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\control_modes.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\defines.h"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\events.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\failsafe.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\geofence.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\navigation.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\radio.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\sensors.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\setup.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\system.pde"
+#include "C:\Users\mdarling\Desktop\Arduino_Follower\ArduPlane\test.pde"
 #endif
