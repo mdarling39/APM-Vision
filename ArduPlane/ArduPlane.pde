@@ -852,10 +852,19 @@ static void medium_loop()
 
 
 		// Get the Rel. NAV solution over serial		//begin #MD
+		// and added MAVLINK message to update status of vision subystem
 		if (control_mode == REL_NAV) {
-			if (!rNav->update()) {
+		static bool have_rnav, last_have_rnav;
+		have_rnav = rNav->update();
+			if (have_rnav) {
+				if (have_rnav != last_have_rnav)
+					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial communication"));
+			} else {
 				DBG_PRINTLN("NO SERIAL DATA");
+				if (have_rnav != last_have_rnav)
+					gcs_send_text_P(SEVERITY_LOW,PSTR("Missing RNAV serial data"));
 			}
+			last_have_rnav = have_rnav;
 		} //end #MD
 
         break;
