@@ -188,7 +188,7 @@ public:
 				if ((LED_bitmask & 0x1F) == MASK_LED_ALL) {
 					if (isnan(payload[0]))  // expect NaN on failed pose estimate
 					{
-						DBG->println("ZOH");
+						DBG_PRINTLN("ZOH");
 					} else {
 
 					// Everything worked -- YAY!  :)
@@ -202,28 +202,28 @@ public:
 					timer = millis();  // reset the timer
 
 					// Print the relative state read from serial
-					DBG->print(dx_b.x); DBG->print("  "); DBG->print(dx_b.y); DBG->print("  "); DBG->print(dx_b.z); DBG->print("  ");
-					DBG->print(dphi); DBG->print("  "); DBG->print(dtheta); DBG->print("  "); DBG->println(dpsi);
+					DBG_PRINT(dx_b.x); DBG_PRINT("  "); DBG_PRINT(dx_b.y); DBG_PRINT("  "); DBG_PRINT(dx_b.z); DBG_PRINT("  ");
+					DBG_PRINT(dphi); DBG_PRINT("  "); DBG_PRINT(dtheta); DBG_PRINT("  "); DBG_PRINTLN(dpsi);
 					}
 
 				} else {
 					// not all LEDs in the frame
-					DBG->println("LEDS_MISSING");
+					DBG_PRINTLN("LEDS_MISSING");
 				}
 
 			} else {
 				// checksum did not match read value
-				DBG->println("BAD_CHKSM");
+				DBG_PRINTLN("BAD_CHKSM");
 			}
 
 		} else {
 			// the entire message is not available
-			DBG->println("NO_MSG");
+			DBG_PRINTLN("NO_MSG");
 		}
 
-
 		// request data for next time
-		if (rNAVSerial->available() > 2*expected_len) rNAVSerial->readBytes(NULL,rNAVSerial->available() - 2*expected_len);
+		if (rNAVSerial->available() > 2*expected_len)
+			rNAVSerial->readBytes(NULL,rNAVSerial->available() - 2*expected_len);
 		rNAVSerial->println("HHHHH");
 
 

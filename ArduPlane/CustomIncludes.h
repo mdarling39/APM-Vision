@@ -13,6 +13,15 @@
 	FastSerial* DBG = NULL;
 #endif
 
+// define macros for printing to serial port
+#if (DBG == NULL)
+#define DBG_PRINT(x)	;
+#define DBG_PRINTLN(x)	;
+#else
+#define DBG_PRINT(x)   	DBG->print(x);
+#define DBG_PRINTLN(x)  DBG->println(x);
+#endif
+
 #include "RelNAV.h"
 
 #endif /*CUSTOMINCLUDES_H*/
