@@ -338,13 +338,6 @@ static void startup_ground(void)
 
 static void set_mode(enum FlightMode mode)
 {
-	if (mode == AUTO_LED){		//#MD Flip the LED_Switch
-		LED_Switch = true;
-		mode = AUTO;
-	} else {
-		LED_Switch = false;
-	}
-
     if(control_mode == mode) {
         // don't switch modes if we are already in the correct mode.
         return;

@@ -1016,7 +1016,17 @@ static void slow_loop()
     }
 
 	// Relay for LEDs (leader) on pin A0:  +5V ON, 0V OFF
+#if HAS_LEDS
+	uint16_t pulsewidth = APM_RC.InputCh(LED_CH - 1);  // LED switch will be hardcoded to Ch6
+	if (pulsewidth <= 910 || pulsewidth >=2090) {}
+		// leave LED switch unchanged
+	else if (pulsewidth > 1400)
+		LED_Switch = true;
+	else
+		LED_Switch = false;
+
 	(LED_Switch == true) ? digitalWrite(A0,0x1) : digitalWrite(A0,0x0);
+#endif
 }
 
 static void one_second_loop()
