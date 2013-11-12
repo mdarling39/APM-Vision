@@ -1018,7 +1018,7 @@ static void slow_loop()
         break;
     }
 
-	// Relay for LEDs (leader) on pin A0:  +5V ON, 0V OFF
+	// Relay for LEDs (leader) on pin A1:  +5V ON, 0V OFF
 #if HAS_LEDS
 	uint16_t pulsewidth = APM_RC.InputCh(LED_CH - 1);  // LED switch channel is defined in APM_Config.h
 	if (pulsewidth <= 910 || pulsewidth >=2090) {}
@@ -1028,7 +1028,7 @@ static void slow_loop()
 	else
 		LED_Switch = false;
 
-	(LED_Switch == true) ? digitalWrite(A0,0x1) : digitalWrite(A0,0x0);
+	(LED_Switch == true) ? digitalWrite(A1,0x1) : digitalWrite(A1,0x0);
 #endif
 }
 
