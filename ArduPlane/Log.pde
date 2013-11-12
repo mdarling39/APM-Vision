@@ -76,6 +76,7 @@ print_log_menu(void)
         PLOG(CMD);
         PLOG(CUR);
 		PLOG(RNAV);  //#MD
+		PLOG(LEDS);
  #undef PLOG
     }
 
@@ -190,6 +191,7 @@ select_logs(uint8_t argc, const Menu::arg *argv)
         TARG(CMD);
         TARG(CUR);
 		TARG(RNAV);  //#MD
+		TARG(LEDS);   //#MD
  #undef TARG
     }
 
@@ -350,9 +352,7 @@ static void Log_Write_GPS(      int32_t log_Time, int32_t log_Lattitude, int32_t
 
 // write an RNAV packet.  Total length : ?? bytes
 static void Log_Write_RNAV(		int32_t distance_error, int16_t throttle_nudge, int32_t pitch_error, int32_t nav_pitch_cd, int32_t roll_error,
-								int32_t nav_roll_cd, RelNAV* rNav)
-					
-
+								int32_t nav_roll_cd, RelNAV* rNav)					
 {
 	DataFlash.WriteByte(HEAD_BYTE1);
 	DataFlash.WriteByte(HEAD_BYTE2);
@@ -370,6 +370,15 @@ static void Log_Write_RNAV(		int32_t distance_error, int16_t throttle_nudge, int
 	DataFlash.WriteInt((int) (rNav->get_relPitch()*100));
 	DataFlash.WriteInt((int) (rNav->get_relHdg()*100));
 	DataFlash.WriteInt((int) (rNav->get_LED_bitmask()));
+	DataFlash.WriteByte(END_BYTE);
+}
+
+static void Log_Write_LEDSwitch(bool LED_Switch) 
+{
+	DataFlash.WriteByte(HEAD_BYTE1);
+	DataFlash.WriteByte(HEAD_BYTE2);
+	DataFlash.WriteByte(LOG_LED_MSG);
+	DataFlash.WriteInt((int) LED_Switch);
 	DataFlash.WriteByte(END_BYTE);
 }
 
@@ -547,7 +556,7 @@ static void Log_Read_GPS()
                     l[3]/100.0, l[4]/100.0, l[5]/100.0, l[6]/100.0);
 }
 
-static void Log_Read_RNAV()
+static void Log_Read_RNAV()  //#MD
 {
 	int32_t l[4];
 	int16_t i[9];
@@ -569,6 +578,13 @@ static void Log_Read_RNAV()
 				i[1]/100., i[2]/100., i[3]/100., i[4]/100.,
 				l[1], l[2], l[3], i[5]/100., i[6]/100., i[7]/100.,
 				i[8]);
+}
+
+static void Log_Read_LEDSwitch()  //#MD
+{
+	int16_t i;
+	i = DataFlash.ReadInt();
+	cliSerial->printf_P(PSTR("LED: %d\n"),i);
 }
 
 // Read a raw accel/gyro packet
@@ -667,9 +683,15 @@ static int16_t Log_Read_Process(int16_t start_page, int16_t end_page)
                                 }else if(data == LOG_STARTUP_MSG) {
                                     Log_Read_Startup();
                                     log_step++;
+
 								}else if(data == LOG_RNAV_MSG) {
 										Log_Read_RNAV();		
-										log_step++;				
+										log_step++;
+
+								}else if(data == LOG_LED_MSG) {
+										Log_Read_LEDSwitch();
+										log_step++;
+
                                 }else {
                                     if(data == LOG_GPS_MSG) {
                                         Log_Read_GPS();
@@ -711,6 +733,9 @@ static void Log_Write_GPS(      int32_t log_Time, int32_t log_Lattitude, int32_t
                                 int32_t log_Ground_Speed, int32_t log_Ground_Course, byte log_Fix, byte log_NumSats) {
 
 static void Log_Write_RNAV() {
+}
+
+static void Log_Write_LEDSwitch() {
 }
 
 static void Log_Write_Performance() {
