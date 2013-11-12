@@ -1017,7 +1017,7 @@ static void slow_loop()
 
 	// Relay for LEDs (leader) on pin A0:  +5V ON, 0V OFF
 #if HAS_LEDS
-	uint16_t pulsewidth = APM_RC.InputCh(LED_CH - 1);  // LED switch will be hardcoded to Ch6
+	uint16_t pulsewidth = APM_RC.InputCh(LED_CH - 1);  // LED switch channel is defined in APM_Config.h
 	if (pulsewidth <= 910 || pulsewidth >=2090) {}
 		// leave LED switch unchanged
 	else if (pulsewidth > 1400)

@@ -7,20 +7,13 @@
 #define MY_DEBUG  0
 #endif
 
-#if (MY_DEBUG > 0)
-	FastSerial* DBG = &Serial1;
-#else
-	FastSerial* DBG = NULL;
-#endif
+
+FastSerial* DBG = &Serial1;
 
 // define macros for printing to serial port
-#if (DBG == NULL)
-#define DBG_PRINT(x)	;
-#define DBG_PRINTLN(x)	;
-#else
-#define DBG_PRINT(x)   	DBG->print(x);
-#define DBG_PRINTLN(x)  DBG->println(x);
-#endif
+#define DBG_PRINT(x)   	if (MY_DEBUG > 0) DBG->print(x);   else;
+#define DBG_PRINTLN(x)  if (MY_DEBUG > 0) DBG->println(x); else;
+
 
 #include "RelNAV.h"
 
