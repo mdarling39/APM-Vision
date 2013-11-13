@@ -134,10 +134,10 @@ public:
 
 
 	// listen over serial port for relative navigation update
-	boolean update() {
+	int update() {
 
 		byte incomingByte, _LED_bitmask;
-		boolean receivedData = false;
+		int receivedData = 0;
 		float payload[6];
 		int payload_len = 6, expected_len;
 
@@ -179,7 +179,7 @@ public:
 
 			// compare checksums
 			if ( rNAVSerial->read() == chk) {
-				receivedData = true;  // we at least received data
+				receivedData = 1;  // we at least received data
 #if HIL_MODE==HIL_MODE_ATTITUDE
 				LED_bitmask = _LED_bitmask;
 #else
@@ -189,6 +189,7 @@ public:
 					if (isnan(payload[0]))  // expect NaN on failed pose estimate
 					{
 						DBG_PRINTLN("ZOH");
+						receivedData = 2;  // signifies ZOH
 					} else {
 
 					// Everything worked -- YAY!  :)

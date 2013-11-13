@@ -854,13 +854,16 @@ static void medium_loop()
 		// Get the Rel. NAV solution over serial		//begin #MD
 		// and added MAVLINK message to update status of vision subystem
 		if (control_mode == REL_NAV) {
-		static bool have_rnav;
+		static int have_rnav, last_have_rnav;
 		static bool slow_have_rnav; // rest at 1 Hz
 		have_rnav = rNav->update();
 		have_position = have_rnav;  // "have_position" must be set to enter the navigation loop
-			if (have_rnav) {
-				slow_have_rnav = have_rnav;
-				if (have_rnav != last_have_rnav)
+		if (have_rnav) {
+			// Want to have true if numeric, false if NANs
+			if (have_rnav == 1)
+				slow_have_rnav = true;
+
+			if ((bool)have_rnav != (bool)last_have_rnav)
 					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial comm"));
 			} else {
 				DBG_PRINTLN("NO SERIAL DATA");
@@ -878,7 +881,8 @@ static void medium_loop()
 				gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking..."));
 				break;
 			case false:
-				gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking FAILURE"));
+				if (have_rnav)
+					gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking FAILURE"));
 				break;
 			default:
 				gcs_send_text_P(SEVERITY_LOW,PSTR("Error reading 'slow_have_rnav'!"));

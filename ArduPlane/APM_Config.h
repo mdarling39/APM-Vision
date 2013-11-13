@@ -18,7 +18,7 @@
 #define HIL_MODE            HIL_MODE_DISABLED//HIL_MODE_ATTITUDE//HIL_MODE_DISABLED
 #define MY_DEBUG			1 // Will automatically be set to 0 (false) if HIL_MODE_DISABLED
 
-#define HAS_LEDS			1 // use 1 for leader, 0 for follower
+#define HAS_LEDS			0 // use 1 for leader, 0 for follower
 #define LED_CH				6 // Channel of RC switch for LEDs
 
 /*
