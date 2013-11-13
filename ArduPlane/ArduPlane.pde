@@ -855,9 +855,11 @@ static void medium_loop()
 		// and added MAVLINK message to update status of vision subystem
 		if (control_mode == REL_NAV) {
 		static bool have_rnav, last_have_rnav;
+		static bool slow_have_rnav; // rest at 1 Hz
 		have_rnav = rNav->update();
 		have_position = have_rnav;  // "have_position" must be set to enter the navigation loop
 			if (have_rnav) {
+				slow_have_rnav = have_rnav;
 				if (have_rnav != last_have_rnav)
 					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial comm"));
 			} else {
@@ -866,6 +868,24 @@ static void medium_loop()
 					gcs_send_text_P(SEVERITY_LOW,PSTR("Missing RNAV serial data"));
 			}
 			last_have_rnav = have_rnav;
+
+
+		if (slow_loopCounter == 0) // send a MAVLINK message to update on pose estimate status (1 Hz)
+		{
+			switch(slow_have_rnav)
+			{
+			case true:
+				gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking..."));
+				break;
+			case false:
+				gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking FAILURE"));
+				break;
+			default:
+				gcs_send_text_P(SEVERITY_LOW,PSTR("Error reading 'slow_have_rnav'!"));
+				break;
+			}
+			slow_have_rnav = false; // reset slow_rnav 
+		}
 		} //end #MD
 
         break;
