@@ -856,6 +856,7 @@ static void medium_loop()
 		if (control_mode == REL_NAV) {
 		static int have_rnav, last_have_rnav;
 		static bool slow_have_rnav; // rest at 1 Hz
+		
 		have_rnav = rNav->update();
 		have_position = have_rnav;  // "have_position" must be set to enter the navigation loop
 		if (have_rnav) {
@@ -867,7 +868,7 @@ static void medium_loop()
 					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial comm"));
 			} else {
 				DBG_PRINTLN("NO SERIAL DATA");
-				if (have_rnav != last_have_rnav)
+				if ((have_rnav != last_have_rnav) || (slow_loopCounter == 0))
 					gcs_send_text_P(SEVERITY_LOW,PSTR("Missing RNAV serial data"));
 			}
 			last_have_rnav = have_rnav;
