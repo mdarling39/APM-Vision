@@ -1053,7 +1053,11 @@ static void slow_loop()
 	else
 		LED_Switch = false;
 
-	(LED_Switch == true) ? digitalWrite(A1,0x1) : digitalWrite(A1,0x0);
+	//(LED_Switch == true) ? digitalWrite(A1,0x1) : digitalWrite(A1,0x0);
+	if (LED_Switch == true)
+		digitalWrite(LED_CH,HIGH);
+	else
+		digitalWrite(LED_CH,LOW);
 #endif
 }
 
