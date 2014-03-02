@@ -670,6 +670,7 @@ static uint8_t delta_ms_medium_loop;
 
 // Counters for branching from medium control loop to slower loops
 static byte slow_loopCounter;
+static int slow_have_rnav; // #MD reset at 1 Hz
 // Counter to trigger execution of very low rate processes
 static byte superslow_loopCounter;
 // Counter to trigger execution of 1 Hz processes
@@ -854,58 +855,37 @@ static void medium_loop()
 		// Get the Rel. NAV solution over serial		//begin #MD
 		// and added MAVLINK message to update status of vision subystem
 		if (control_mode == REL_NAV) {
-		static int have_rnav, last_have_rnav;
-		static bool slow_have_rnav; // reset at 1 Hz
+		int have_rnav;
 		
 		have_rnav = rNav->update();
 		have_position = have_rnav;  // "have_position" must be set to enter the navigation loop
-		if (have_rnav > 0) {
-			// Want to have true if numeric, false if NANs
-			if (have_rnav == 1)  // 1 means that we have NEW data that isn't just ZOH
+		
+		if ((slow_have_rnav != 1) && (slow_have_rnav != 2)) {
+			if (have_rnav == 1)
 				slow_have_rnav = 1;
-			else if ((have_rnav == 2) && (slow_have_rnav < 1))
+			else if (have_rnav == 2)
 				slow_have_rnav = 2;
-
-			if ((bool)have_rnav != (bool)last_have_rnav) {
-					gcs_send_text_P(SEVERITY_LOW,PSTR("(Re)estabilshed RNAV serial comm"));
-			} else {
-				DBG_PRINTLN("NO SERIAL DATA");
-				if ((have_rnav != last_have_rnav) || (slow_loopCounter == 0))
-					gcs_send_text_P(SEVERITY_LOW,PSTR("Missing RNAV serial data"));
-			}
+			else
+				slow_have_rnav = 0;
+		} else if (slow_have_rnav == 2) {
+			if (have_rnav == 1)
+				slow_have_rnav = 1;
 		}
-		last_have_rnav = have_rnav;
 
-		if (have_rnav == 0)
-			gcs_send_text_P(SEVERITY_LOW,PSTR("NO MESSAGE"));
-		else if (have_rnav == 1)
-			gcs_send_text_P(SEVERITY_LOW,PSTR("TRACKING"));
-		else if (have_rnav == 2)
-			gcs_send_text_P(SEVERITY_LOW,PSTR("NO POSE"));
-
-		/*
 		if (slow_loopCounter == 0) // send a MAVLINK message to update on pose estimate status (1 Hz)
 		{
-			switch(slow_have_rnav)
-			{
-			case 0:  // Didn't receive a message
+			if (slow_have_rnav == 0)
 				gcs_send_text_P(SEVERITY_LOW,PSTR("No RNAV message received"));
-				break;
-			case 1:  // Received New Data
+			else if (slow_have_rnav == 1)
 				gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking..."));
-				break;
-			case 2:  // Received message, but no pose estimate
-				//if (have_rnav)
+			else if (slow_have_rnav == 2)
 				gcs_send_text_P(SEVERITY_LOW,PSTR("RNAV Tracking FAILURE"));
-				break;
-			default:
+			else
 				gcs_send_text_P(SEVERITY_LOW,PSTR("Error reading 'slow_have_rnav'!"));
-				break;
-			}
 
 			slow_have_rnav = 0; // reset slow_rnav 
 		}
-		*/
+		
 		} //end #MD
 
         break;
