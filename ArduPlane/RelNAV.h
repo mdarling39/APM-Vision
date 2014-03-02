@@ -152,6 +152,7 @@ public:
 			// check for message header
 			rNAVSerial->find("DATA");
 			uint8_t chk = 'D' ^ 'A' ^ 'T' ^ 'A';
+			static uint8_t last_chk;
 
 			for (int i = 0; i<payload_len; i++) {
 
@@ -186,7 +187,7 @@ public:
 				LED_bitmask = 0xFF;
 #endif
 				if ((LED_bitmask & 0x1F) == MASK_LED_ALL) {
-					if (isnan(payload[0]))  // expect NaN on failed pose estimate
+					if (isnan(payload[0]) || (chk == last_chk))  // expect NaN on failed pose estimate (Or an IDENTICAL estimate to previous frame (which will give us an identical checksum))
 					{
 						DBG_PRINTLN("ZOH");
 						receivedData = 2;  // signifies ZOH
@@ -200,6 +201,7 @@ public:
 					dtheta		= payload[4];
 					dpsi		= payload[5];
 
+					last_chk = chk;
 					timer = millis();  // reset the timer
 
 					// Print the relative state read from serial
