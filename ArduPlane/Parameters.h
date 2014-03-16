@@ -189,6 +189,7 @@ public:
 		k_param_k5_bank,		//#MD
 		k_param_k_bank2roll,	//#MD
 		k_param_k_hdg2roll,     //#MD
+		k_param_thr_ewma,		//#MD
 
         //
         // 210: flight modes
@@ -263,6 +264,7 @@ public:
 	AP_Float k1_bank;		//#MD
 	AP_Float k3_bank;		//#MD
 	AP_Float k5_bank;		//#MD
+	AP_Float thr_ewma;		//#MD
 
     // speed used for speed scaling
     AP_Float scaling_speed;

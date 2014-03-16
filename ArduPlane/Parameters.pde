@@ -53,6 +53,8 @@ const AP_Param::Info var_info[] PROGMEM = {
 	GSCALAR(k3_bank,	"K3_BANK",0),	//#MD
 	GSCALAR(k5_bank,	"K5_BANK",0),	//#MD
 
+	GSCALAR(thr_ewma,   "THR_EWMA",0.25), // #MD
+
 ///////////////////////////////////////////////////////////////////////
 
     // @Param: SERIAL3_BAUD

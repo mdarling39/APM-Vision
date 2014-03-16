@@ -10,7 +10,7 @@
 // APM2_BETA_HARDWARE is used to support early (September-October 2011) APM2
 // hardware which had the BMP085 barometer onboard. Only a handful of
 // developers have these boards.
-//#define APM2_BETA_HARDWARE
+//#define APM2_BETA_HARDWARE 
 
 // The following are the recommended settings for Xplane
 // simulation. Remove the leading "/* and trailing "*/" to enable:
@@ -19,6 +19,7 @@
 #define MY_DEBUG			1 // Will automatically be set to 0 (false) if HIL_MODE_DISABLED
 
 #define HAS_LEDS			0 // use 1 for leader, 0 for follower
+#define HAS_VISION			1 // use 0 for leader, 1 for follower
 #define LED_CH				6 // Channel of RC switch for LEDs
 
 /*

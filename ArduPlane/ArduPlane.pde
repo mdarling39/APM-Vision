@@ -854,11 +854,13 @@ static void medium_loop()
 
 		// Get the Rel. NAV solution over serial		//begin #MD
 		// and added MAVLINK message to update status of vision subystem
-		if (control_mode == REL_NAV) {
+#if (HAS_VISION)
+		if ((control_mode == REL_NAV) || (control_mode == AUTO)) {
 		int have_rnav;
 		
 		have_rnav = rNav->update();
-		have_position = have_rnav;  // "have_position" must be set to enter the navigation loop
+		if (control_mode == REL_NAV)
+			have_position = have_rnav;  // "have_position" must be set to enter the navigation loop (is automatically set in AUTO mode)
 		
 		if ((slow_have_rnav != 1) && (slow_have_rnav != 2)) {
 			if (have_rnav == 1)
@@ -887,6 +889,7 @@ static void medium_loop()
 		}
 		
 		} //end #MD
+#endif //HAS_VISION
 
         break;
 

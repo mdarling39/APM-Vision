@@ -164,6 +164,10 @@ static void crash_checker()
 
 static void calc_throttle()
 {
+	// Create last_throttle variable for low-pass filter on throttle
+	static int16_t last_throttle = g.throttle_cruise;
+	if (control_mode != REL_NAV)
+		last_throttle = g.throttle_cruise; //re-initialize for next switch to REL_NAV
 
 	switch (control_mode){  // #MD added switch/case flow control and REL_NAV case
 	case REL_NAV:
@@ -181,6 +185,10 @@ static void calc_throttle()
 			}
 
 			g.channel_throttle.servo_out = g.throttle_cruise + throttle_nudge;
+
+			//implement EWMA low-pass filter on throttle channel
+			g.channel_throttle.servo_out = g.thr_ewma * g.channel_throttle.servo_out + (1 - g.thr_ewma) * last_throttle;
+			last_throttle = g.channel_throttle.servo_out;
 
 
 			//// DEBUG INFO
