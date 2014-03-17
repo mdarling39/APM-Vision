@@ -189,7 +189,6 @@ public:
 		k_param_k5_bank,		//#MD
 		k_param_k_bank2roll,	//#MD
 		k_param_k_hdg2roll,     //#MD
-		k_param_thr_ewma,		//#MD
 
         //
         // 210: flight modes
@@ -223,6 +222,9 @@ public:
         k_param_rollController,
         k_param_pitchController,
         k_param_yawController,
+
+		// Putting this here to avoid displacing FLTMODE_CH
+		k_param_thr_ewma,			//#MD
 
         //
         // 240: PID Controllers
@@ -264,7 +266,6 @@ public:
 	AP_Float k1_bank;		//#MD
 	AP_Float k3_bank;		//#MD
 	AP_Float k5_bank;		//#MD
-	AP_Float thr_ewma;		//#MD
 
     // speed used for speed scaling
     AP_Float scaling_speed;
@@ -289,6 +290,8 @@ public:
     AP_Int16 waypoint_radius;
     AP_Int16 loiter_radius;
 	AP_Int16 target_separation;		// #MD  For relative navigation
+
+	AP_Float thr_ewma;		//#MD
 
 #if GEOFENCE_ENABLED == ENABLED
     AP_Int8 fence_action;

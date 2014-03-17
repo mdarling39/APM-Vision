@@ -186,10 +186,6 @@ static void calc_throttle()
 
 			g.channel_throttle.servo_out = g.throttle_cruise + throttle_nudge;
 
-			//implement EWMA low-pass filter on throttle channel
-			g.channel_throttle.servo_out = g.thr_ewma * g.channel_throttle.servo_out + (1 - g.thr_ewma) * last_throttle;
-			last_throttle = g.channel_throttle.servo_out;
-
 
 			//// DEBUG INFO
 			//if (medium_loopCounter == 3) {
@@ -202,6 +198,13 @@ static void calc_throttle()
 			//}
 			
 
+			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
+
+			//implement EWMA low-pass filter on throttle channel
+			g.channel_throttle.servo_out = g.thr_ewma * g.channel_throttle.servo_out + (1 - g.thr_ewma) * last_throttle;
+			last_throttle = g.channel_throttle.servo_out;
+
+			// Constrain throttle once more
 			g.channel_throttle.servo_out = constrain(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
 
 			//if (medium_loopCounter == 3) {
